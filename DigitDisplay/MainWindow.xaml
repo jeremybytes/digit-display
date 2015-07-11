@@ -1,0 +1,18 @@
+﻿<Window x:Class="DigitDisplay.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Digit Display" Height="550" Width="800" 
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="TimingBlock" Grid.Row="0" FontSize="24"
+                   HorizontalAlignment="Center"/>
+        <WrapPanel x:Name="DigitsBox" Grid.Row="1"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        </WrapPanel>
+        <Image x:Name="TestImage"/>
+    </Grid>
+</Window>
