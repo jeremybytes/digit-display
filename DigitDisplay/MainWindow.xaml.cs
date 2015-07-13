@@ -12,12 +12,6 @@ namespace DigitDisplay
         {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
-
-            //string[] rawData = FileLoader.LoadDataStrings(1);
-
-            //int[,] digitArray = DigitBitmap.GenerateDigitArray(rawData[0]);
-            //Bitmap image = DigitBitmap.GetBitmapFromDigitArray(digitArray);
-            //TestImage.Source = image.ToWpfBitmap();
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -28,14 +22,10 @@ namespace DigitDisplay
 
             foreach (var imageString in rawData)
             {
-                //int[,] digitArray = DigitBitmap.GenerateDigitArray(imageString);
-                //Bitmap image = DigitBitmap.GetBitmapFromDigitArray(digitArray);
                 Bitmap image = DigitBitmap.GetBitmapFromRawData(imageString);
 
                 var imageControl = new System.Windows.Controls.Image();
                 imageControl.Source = image.ToWpfBitmap();
-                //imageControl.Width = 28;
-                //imageControl.Height = 28;
                 imageControl.Width = imageControl.Source.Width;
                 imageControl.Height = imageControl.Source.Height;
 
@@ -45,6 +35,5 @@ namespace DigitDisplay
             var duration = DateTimeOffset.Now - startTime;
             TimingBlock.Text = string.Format("Duration: {0}", duration.ToString());
         }
-
     }
 }
