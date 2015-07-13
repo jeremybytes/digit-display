@@ -47,16 +47,16 @@ namespace DigitLoader.Test
             // Assert
             for (int i = 0; i < 28; i++)
             {
-                Assert.AreEqual(array0[i], output[0, i]);
-                Assert.AreEqual(array1[i], output[1, i]);
-                Assert.AreEqual(array2[i], output[2, i]);
-                Assert.AreEqual(array3[i], output[3, i]);
-                Assert.AreEqual(array4[i], output[4, i]);
-                Assert.AreEqual(array5[i], output[5, i]);
-                Assert.AreEqual(array6[i], output[6, i]);
-                Assert.AreEqual(array7[i], output[7, i]);
-                Assert.AreEqual(array8[i], output[8, i]);
-                Assert.AreEqual(array9[i], output[9, i]);
+                Assert.AreEqual(array0[i], output[0][i]);
+                Assert.AreEqual(array1[i], output[1][i]);
+                Assert.AreEqual(array2[i], output[2][i]);
+                Assert.AreEqual(array3[i], output[3][i]);
+                Assert.AreEqual(array4[i], output[4][i]);
+                Assert.AreEqual(array5[i], output[5][i]);
+                Assert.AreEqual(array6[i], output[6][i]);
+                Assert.AreEqual(array7[i], output[7][i]);
+                Assert.AreEqual(array8[i], output[8][i]);
+                Assert.AreEqual(array9[i], output[9][i]);
             }
         }
 
@@ -69,16 +69,16 @@ namespace DigitLoader.Test
             // Assert
             for (int i = 0; i < 28; i++)
             {
-                Assert.AreEqual(array10[i], output[10, i]);
-                Assert.AreEqual(array11[i], output[11, i]);
-                Assert.AreEqual(array12[i], output[12, i]);
-                Assert.AreEqual(array13[i], output[13, i]);
-                Assert.AreEqual(array14[i], output[14, i]);
-                Assert.AreEqual(array15[i], output[15, i]);
-                Assert.AreEqual(array16[i], output[16, i]);
-                Assert.AreEqual(array17[i], output[17, i]);
-                Assert.AreEqual(array18[i], output[18, i]);
-                Assert.AreEqual(array19[i], output[19, i]);
+                Assert.AreEqual(array10[i], output[10][i]);
+                Assert.AreEqual(array11[i], output[11][i]);
+                Assert.AreEqual(array12[i], output[12][i]);
+                Assert.AreEqual(array13[i], output[13][i]);
+                Assert.AreEqual(array14[i], output[14][i]);
+                Assert.AreEqual(array15[i], output[15][i]);
+                Assert.AreEqual(array16[i], output[16][i]);
+                Assert.AreEqual(array17[i], output[17][i]);
+                Assert.AreEqual(array18[i], output[18][i]);
+                Assert.AreEqual(array19[i], output[19][i]);
             }
         }
 
@@ -91,14 +91,14 @@ namespace DigitLoader.Test
             // Assert
             for (int i = 0; i < 28; i++)
             {
-                Assert.AreEqual(array20[i], output[20, i]);
-                Assert.AreEqual(array21[i], output[21, i]);
-                Assert.AreEqual(array22[i], output[22, i]);
-                Assert.AreEqual(array23[i], output[23, i]);
-                Assert.AreEqual(array24[i], output[24, i]);
-                Assert.AreEqual(array25[i], output[25, i]);
-                Assert.AreEqual(array26[i], output[26, i]);
-                Assert.AreEqual(array27[i], output[27, i]);
+                Assert.AreEqual(array20[i], output[20][i]);
+                Assert.AreEqual(array21[i], output[21][i]);
+                Assert.AreEqual(array22[i], output[22][i]);
+                Assert.AreEqual(array23[i], output[23][i]);
+                Assert.AreEqual(array24[i], output[24][i]);
+                Assert.AreEqual(array25[i], output[25][i]);
+                Assert.AreEqual(array26[i], output[26][i]);
+                Assert.AreEqual(array27[i], output[27][i]);
             }
         }
     }
