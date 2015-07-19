@@ -18,7 +18,7 @@ namespace DigitDisplay
         {
             var startTime = DateTimeOffset.Now;
 
-            string[] rawData = FileLoader.LoadDataStrings();
+            string[] rawData = FileLoader.LoadDataStrings(1000);
 
             foreach (var imageString in rawData)
             {

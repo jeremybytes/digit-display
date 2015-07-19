@@ -13,7 +13,7 @@ namespace DigitLoader
             string dataFile = ConfigurationManager.AppSettings["dataFile"];
             string fileName = AppDomain.CurrentDomain.BaseDirectory + dataFile;
 
-            var data = File.ReadAllLines(fileName)
+            var data = File.ReadLines(fileName)
                 .Skip(1)
                 .Take(threshold)
                 .ToArray();
