@@ -18,7 +18,7 @@ namespace DigitDisplay
         {
             var startTime = DateTimeOffset.Now;
 
-            string[] rawData = FileLoader.LoadDataStrings(1000);
+            string[] rawData = FileLoader.LoadDataStrings(10000);
 
             foreach (var imageString in rawData)
             {
@@ -30,6 +30,15 @@ namespace DigitDisplay
                 imageControl.Height = imageControl.Source.Height;
 
                 DigitsBox.Children.Add(imageControl);
+
+                var textBlock = new TextBlock();
+                textBlock.Height = imageControl.Height;
+                textBlock.Width = imageControl.Width;
+                textBlock.FontSize = 12;
+                textBlock.Text = "0";
+
+                DigitsBox.Children.Add(textBlock);
+
             }
 
             var duration = DateTimeOffset.Now - startTime;
