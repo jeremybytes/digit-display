@@ -11,12 +11,24 @@ namespace CSharp
     {
         private static Observation ObservationFactory(string data)
         {
+            string label;
+            int[] pixels;
             var commaSeparated = data.Split(',');
-            var label = commaSeparated[0];
-            var pixels = commaSeparated
-                        .Skip(1)
-                        .Select(x => Convert.ToInt32(x))
-                        .ToArray();
+            if (commaSeparated.Length == 785)
+            {
+                label = commaSeparated[0];
+                pixels = commaSeparated
+                            .Skip(1)
+                            .Select(x => Convert.ToInt32(x))
+                            .ToArray();
+            }
+            else
+            {
+                label = "T";
+                pixels = commaSeparated
+                            .Select(x => Convert.ToInt32(x))
+                            .ToArray();
+            }
 
             return new Observation(label, pixels);
         }

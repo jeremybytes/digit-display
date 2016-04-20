@@ -1,6 +1,9 @@
-﻿using DigitLoader;
+﻿using CSharp;
+using DigitLoader;
 using System;
+using System.Configuration;
 using System.Drawing;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -8,6 +11,9 @@ namespace DigitDisplay
 {
     public partial class MainWindow : Window
     {
+        ManhattanDistance distance;
+        BasicClassifier classifier;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -16,9 +22,11 @@ namespace DigitDisplay
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            LoadTrainingSet();
+
             var startTime = DateTimeOffset.Now;
 
-            string[] rawData = FileLoader.LoadDataStrings(10000);
+            string[] rawData = FileLoader.LoadDataStrings(1000);
 
             foreach (var imageString in rawData)
             {
@@ -35,7 +43,11 @@ namespace DigitDisplay
                 textBlock.Height = imageControl.Height;
                 textBlock.Width = imageControl.Width;
                 textBlock.FontSize = 12;
-                textBlock.Text = "0";
+                //textBlock.Text = "0";
+
+                int[] ints = imageString.Split(',').Select(x => Convert.ToInt32(x)).ToArray();
+                var predicted = classifier.Predict(ints);
+                textBlock.Text = predicted;
 
                 DigitsBox.Children.Add(textBlock);
 
@@ -43,6 +55,24 @@ namespace DigitDisplay
 
             var duration = DateTimeOffset.Now - startTime;
             TimingBlock.Text = string.Format("Duration: {0}", duration.ToString());
+        }
+
+        private void LoadTrainingSet()
+        {
+            distance = new ManhattanDistance();
+            classifier = new BasicClassifier(distance);
+
+            //var trainingPath = @"C:\Development\TestApps\MachineLearning\Chapter1\DigitRecognizer\Data\trainingsample.csv";
+
+            string dataFile = ConfigurationManager.AppSettings["trainingFile"];
+            string trainingPath = AppDomain.CurrentDomain.BaseDirectory + dataFile;
+
+            var training = DataReader.ReadObservations(trainingPath);
+            classifier.Train(training);
+
+            //var validationPath = @"C:\Development\TestApps\MachineLearning\Chapter1\DigitRecognizer\Data\validationsample.csv";
+            //var validation = DataReader.ReadObservations(validationPath);
+
         }
     }
 }
