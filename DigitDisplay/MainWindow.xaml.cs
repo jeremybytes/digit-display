@@ -62,17 +62,11 @@ namespace DigitDisplay
             distance = new ManhattanDistance();
             classifier = new BasicClassifier(distance);
 
-            //var trainingPath = @"C:\Development\TestApps\MachineLearning\Chapter1\DigitRecognizer\Data\trainingsample.csv";
-
-            string dataFile = ConfigurationManager.AppSettings["trainingFile"];
-            string trainingPath = AppDomain.CurrentDomain.BaseDirectory + dataFile;
+            string trainingFile = ConfigurationManager.AppSettings["trainingFile"];
+            string trainingPath = AppDomain.CurrentDomain.BaseDirectory + trainingFile;
 
             var training = DataReader.ReadObservations(trainingPath);
             classifier.Train(training);
-
-            //var validationPath = @"C:\Development\TestApps\MachineLearning\Chapter1\DigitRecognizer\Data\validationsample.csv";
-            //var validation = DataReader.ReadObservations(validationPath);
-
         }
     }
 }
