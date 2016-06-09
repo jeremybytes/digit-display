@@ -34,6 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -102,6 +103,10 @@
     <ProjectReference Include="..\DigitLoader\DigitLoader.csproj">
       <Project>{dfd9dd4e-cb76-4be3-ae29-b64842cab023}</Project>
       <Name>DigitLoader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FunctionalRecognizer\FunctionalRecognizer.fsproj">
+      <Project>{ff2cd045-8b57-422c-954a-ab2cbbe6c065}</Project>
+      <Name>FunctionalRecognizer</Name>
     </ProjectReference>
     <ProjectReference Include="..\Recognizer\Recognizer.csproj">
       <Project>{f15e6f19-7b0d-48a5-b505-7c9658d208cc}</Project>
