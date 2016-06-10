@@ -4,6 +4,7 @@ using System;
 using System.Configuration;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -26,7 +27,7 @@ namespace DigitDisplay
 
             var startTime = DateTimeOffset.Now;
 
-            string[] rawData = FileLoader.LoadDataStrings(100);
+            string[] rawData = FileLoader.LoadDataStrings(10);
 
             //int[][] rawInts = new int[rawData.Length][];
             //for (int i = 0; i < rawData.Length; i++)
@@ -80,7 +81,7 @@ namespace DigitDisplay
 
                 Recognizer.Observation ob = new Recognizer.Observation("", ints);
 
-                var predicted = Recognizer.predict<string>(ob.Pixels, Recognizer.manhattanClassifier);
+                var predicted = Recognizer.predict<string>(ob.Pixels, Recognizer.euclideanClassifier);
                 textBlock.Text = predicted;
 
                 DigitsBox.Children.Add(imageControl);
