@@ -182,3 +182,12 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+/Output/Manhattan_Full.png
+/Output/Manhattan_20000.png
+/Output/Manhattan_2000.png
+/Output/Manhattan_200.png
+/Output/Euclidean_Full.png
+/Output/Euclidean_20000.png
+/Output/Euclidean_2000.png
+/Output/Euclidean_200.png
+/Output/DigitRecognizerResults.txt

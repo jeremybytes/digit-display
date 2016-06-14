@@ -1,12 +1,11 @@
-﻿using CSharp;
-using DigitLoader;
+﻿using DigitLoader;
 using System;
-using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace DigitDisplay
 {
@@ -30,8 +29,7 @@ namespace DigitDisplay
                     () =>
                     {
                         int[] ints = imageString.Split(',').Select(x => Convert.ToInt32(x)).ToArray();
-                        Recognizer.Observation ob = new Recognizer.Observation("", ints);
-                        return Recognizer.predict<string>(ob.Pixels, Recognizer.manhattanClassifier);
+                        return Recognizer.predict<string>(ints, Recognizer.manhattanClassifier);
                     }
                 );
                 task.ContinueWith(t =>
@@ -49,6 +47,7 @@ namespace DigitDisplay
 
             var imageControl = new System.Windows.Controls.Image();
             imageControl.Source = image.ToWpfBitmap();
+            imageControl.Stretch = Stretch.UniformToFill;
             imageControl.Width = imageControl.Source.Width;
             imageControl.Height = imageControl.Source.Height;
 
