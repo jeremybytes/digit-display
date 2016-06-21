@@ -14,7 +14,7 @@ let reader path =
     data.[1..]
     |> Array.map toObservation
 
-let trainingPath = AppDomain.CurrentDomain.BaseDirectory + "train.csv"
+let trainingPath = @"C:\Development\Articles\DigitDisplay-WithRecognizer\Data\trainingsample.csv"
 let trainingData = reader trainingPath
 
 type Distance = int[] * int[] -> int
@@ -38,7 +38,7 @@ let train (trainingset:Observation[]) (dist:Distance) =
 
 let classifier = train trainingData
 
-let validationPath = AppDomain.CurrentDomain.BaseDirectory + "test.csv"
+let validationPath = @"C:\Development\Articles\DigitDisplay-WithRecognizer\Data\validationsample.csv"
 let validationData = reader validationPath
 
 //validationData

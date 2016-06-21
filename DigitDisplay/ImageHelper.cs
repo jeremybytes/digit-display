@@ -16,7 +16,7 @@ namespace DigitDisplay
         {
             using (MemoryStream stream = new MemoryStream())
             {
-                bitmap.Save(stream, ImageFormat.Bmp);
+                bitmap.Save(stream, ImageFormat.Png);
 
                 stream.Position = 0;
                 BitmapImage result = new BitmapImage();

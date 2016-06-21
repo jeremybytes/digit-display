@@ -39,6 +39,7 @@ namespace DigitLoader
                     digitBitmap.SetPixel(j, i,
                         Color.FromArgb(colorValue, colorValue, colorValue));
                 }
+            digitBitmap.MakeTransparent(Color.White);
             return digitBitmap;
         }
 
