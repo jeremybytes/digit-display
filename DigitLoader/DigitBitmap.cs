@@ -11,7 +11,7 @@ namespace DigitLoader
         {
             var rawData = input.Split(',');
             var integerData = rawData
-                .Skip(1)
+                //.Skip(1)
                 .Select(x => Convert.ToInt32(x))
                 .ToArray();
 
@@ -39,6 +39,7 @@ namespace DigitLoader
                     digitBitmap.SetPixel(j, i,
                         Color.FromArgb(colorValue, colorValue, colorValue));
                 }
+            digitBitmap.MakeTransparent(Color.White);
             return digitBitmap;
         }
 

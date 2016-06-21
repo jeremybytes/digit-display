@@ -8,11 +8,15 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock x:Name="TimingBlock" Grid.Row="0" FontSize="24"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock x:Name="TimingBlock" Grid.Row="0" Grid.Column="0" FontSize="24"
                    HorizontalAlignment="Center"/>
-        <WrapPanel x:Name="DigitsBox" Grid.Row="1"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-        </WrapPanel>
+        <TextBlock x:Name="ErrorBlock" Grid.Row="0" Grid.Column="1" FontSize="24"
+                   HorizontalAlignment="Center" Text="Errors: 0"/>
+        <WrapPanel x:Name="DigitsBox" Grid.Row="1" Grid.ColumnSpan="2" />
         <Image x:Name="TestImage"/>
     </Grid>
 </Window>
