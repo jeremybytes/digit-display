@@ -16,7 +16,8 @@
                    HorizontalAlignment="Center"/>
         <TextBlock x:Name="ErrorBlock" Grid.Row="0" Grid.Column="1" FontSize="24"
                    HorizontalAlignment="Center" Text="Errors: 0"/>
-        <WrapPanel x:Name="DigitsBox" Grid.Row="1" Grid.ColumnSpan="2" />
+        <WrapPanel x:Name="DigitsBox1" Grid.Row="1" Grid.Column="0" />
+        <WrapPanel x:Name="DigitsBox2" Grid.Row="1" Grid.Column="1" />
         <Image x:Name="TestImage"/>
     </Grid>
 </Window>

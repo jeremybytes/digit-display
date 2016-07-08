@@ -1,4 +1,5 @@
 ﻿using DigitLoader;
+using Microsoft.FSharp.Core;
 using System;
 using System.Drawing;
 using System.Linq;
@@ -25,27 +26,34 @@ namespace DigitDisplay
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            string[] rawData = FileLoader.LoadDataStrings(1500);
+            string[] rawData = FileLoader.LoadDataStrings(300);
 
+            PopulatePanel(rawData, DigitsBox1, Recognizer.manhattanClassifier);
+            PopulatePanel(rawData, DigitsBox2, Recognizer.euclideanClassifier);
+        }
+
+        private void PopulatePanel(string[] rawData, Panel outputPanel, FSharpFunc<int[], string> classifier)
+        {
             foreach (var imageString in rawData)
             {
                 var task = Task.Run<string>(
                     () =>
                     {
                         int[] ints = imageString.Split(',').Select(x => Convert.ToInt32(x)).ToArray();
-                        return Recognizer.predict<string>(ints, Recognizer.manhattanClassifier);
+                        return Recognizer.predict<string>(ints, classifier);
                     }
                 );
                 task.ContinueWith(t =>
-                    {
-                        CreateUIElements(t.Result, imageString);
-                    },
+                {
+                    CreateUIElements(t.Result, imageString, outputPanel);
+                },
                     TaskScheduler.FromCurrentSynchronizationContext()
                 );
             }
         }
 
-        private void CreateUIElements(string prediction, string imageData)
+        private void CreateUIElements(string prediction, string imageData,
+            Panel panel)
         {
             Bitmap image = DigitBitmap.GetBitmapFromRawData(imageData);
 
@@ -75,7 +83,7 @@ namespace DigitDisplay
             buttonContent.Children.Add(imageControl);
             buttonContent.Children.Add(textBlock);
 
-            DigitsBox.Children.Add(button);
+            panel.Children.Add(button);
 
             TimeSpan duration = DateTimeOffset.Now - startTime;
             TimingBlock.Text = $"Duration (seconds): {duration.TotalSeconds:0}";
