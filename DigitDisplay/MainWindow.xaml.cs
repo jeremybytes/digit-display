@@ -28,7 +28,9 @@ namespace DigitDisplay
         {
             string[] rawData = FileLoader.LoadDataStrings(300);
 
+            Classifier1Text.Text = "Manhattan Distance";
             PopulatePanel(rawData, DigitsBox1, Recognizer.manhattanClassifier);
+            Classifier2Text.Text = "Euclidean Distance";
             PopulatePanel(rawData, DigitsBox2, Recognizer.euclideanClassifier);
         }
 
@@ -36,17 +38,16 @@ namespace DigitDisplay
         {
             foreach (var imageString in rawData)
             {
-                var task = Task.Run<string>(
-                    () =>
+                var task = Task.Run<string>(() =>
                     {
                         int[] ints = imageString.Split(',').Select(x => Convert.ToInt32(x)).ToArray();
                         return Recognizer.predict<string>(ints, classifier);
                     }
                 );
                 task.ContinueWith(t =>
-                {
-                    CreateUIElements(t.Result, imageString, outputPanel);
-                },
+                    {
+                        CreateUIElements(t.Result, imageString, outputPanel);
+                    },
                     TaskScheduler.FromCurrentSynchronizationContext()
                 );
             }
