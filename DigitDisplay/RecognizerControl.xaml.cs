@@ -4,17 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DigitDisplay
 {
@@ -24,7 +17,7 @@ namespace DigitDisplay
         FSharpFunc<int[], string> classifier;
         string[] rawData;
 
-        DateTimeOffset startTime = DateTimeOffset.Now;
+        DateTimeOffset startTime;
         SolidColorBrush redBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 150, 150));
         SolidColorBrush whiteBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
         int errors = 0;
@@ -48,6 +41,7 @@ namespace DigitDisplay
 
         private void PopulatePanel(string[] rawData)
         {
+            var tasks = new List<Task<string>>();
             foreach (var imageString in rawData)
             {
                 var task = Task.Run<string>(() =>
@@ -56,6 +50,7 @@ namespace DigitDisplay
                     return Recognizer.predict<string>(ints, classifier);
                 }
                 );
+                tasks.Add(task);
                 task.ContinueWith(t =>
                 {
                     CreateUIElements(t.Result, imageString, DigitsBox);
@@ -63,6 +58,7 @@ namespace DigitDisplay
                     TaskScheduler.FromCurrentSynchronizationContext()
                 );
             }
+            Task.WhenAny(tasks).ContinueWith(t => startTime = DateTime.Now);
         }
 
         private void CreateUIElements(string prediction, string imageData,
