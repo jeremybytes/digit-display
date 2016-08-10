@@ -31,15 +31,20 @@ namespace DigitDisplay
 
             string[] rawData = FileLoader.LoadDataStrings(recordCount, offset);
 
+            var blurRecognizer = new RecognizerControl(
+                "Blur Classifier", Recognizer.blurClassifier,
+                rawData);
+            LeftPanel.Children.Add(blurRecognizer);
+
             var manhattanRecognier = new RecognizerControl(
                 "Manhattan Classifier", Recognizer.manhattanClassifier,
                 rawData);
-            LeftPanel.Children.Add(manhattanRecognier);
+            RightPanel.Children.Add(manhattanRecognier);
 
-            var euclideanRecognizer = new RecognizerControl(
-                "Euclidean Classifier", Recognizer.euclideanClassifier,
-                rawData);
-            RightPanel.Children.Add(euclideanRecognizer);
+            //var euclideanRecognizer = new RecognizerControl(
+            //    "Euclidean Classifier", Recognizer.euclideanClassifier,
+            //    rawData);
+            //RightPanel.Children.Add(euclideanRecognizer);
         }
     }
 }
