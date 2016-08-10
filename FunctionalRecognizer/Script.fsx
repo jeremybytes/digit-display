@@ -36,6 +36,18 @@ let train (trainingset:Observation[]) (dist:Distance) =
         |> fun x -> x.Label
     classify
 
+let weightedTrain (trainingset:Observation[]) (dist:Distance) =
+    let classify (pixels:int[]) =
+        trainingset
+        |> Array.map (fun x -> (dist (x.Pixels, pixels), x))
+        |> Array.sortBy (fun (x,_) -> x)
+        |> Array.take 5
+        |> Array.countBy (fun (_,x) -> x.Label)
+        |> Array.maxBy (fun (_,x) -> x)
+        |> fst
+    classify
+
+
 let classifier = train trainingData
 
 let validationPath = @"C:\Development\Articles\DigitDisplay-WithRecognizer\Data\validationsample.csv"
@@ -54,7 +66,25 @@ let evaluate validationData classifier =
 let manhattanClassifier = train trainingData manhattanDistance
 let euclideanClassifier = train trainingData euclideanDistance
 
+let weightedManhattanClassifier = weightedTrain trainingData manhattanDistance
+let weightedEuclideanClassifer = weightedTrain trainingData euclideanDistance
+
 printfn "Manhattan"
 evaluate validationData manhattanClassifier
+printfn "Weighted Manhattan"
+evaluate validationData weightedManhattanClassifier
 printfn "Euclidean"
 evaluate validationData euclideanClassifier
+printfn "Weighted Euclidean"
+evaluate validationData weightedEuclideanClassifer
+
+let dist = manhattanDistance
+let pixels = validationData.[2].Pixels
+trainingData
+|> Array.map (fun x -> (dist (x.Pixels, pixels), x))
+|> Array.sortBy (fun (x,_) -> x)
+|> Array.take 5
+|> Array.countBy (fun (_,x) -> x.Label)
+|> Array.maxBy (fun (_,x) -> x)
+|> fst
+

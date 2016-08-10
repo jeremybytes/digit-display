@@ -36,10 +36,15 @@ namespace DigitDisplay
                 rawData);
             LeftPanel.Children.Add(manhattanRecognier);
 
-            var euclideanRecognizer = new RecognizerControl(
-                "Euclidean Classifier", Recognizer.euclideanClassifier,
+            var weightedManhattanRecognizer = new RecognizerControl(
+                "Weighted Manhattan Classifier", Recognizer.weightedManhattanClassifier,
                 rawData);
-            RightPanel.Children.Add(euclideanRecognizer);
+            RightPanel.Children.Add(weightedManhattanRecognizer);
+
+            //var euclideanRecognizer = new RecognizerControl(
+            //    "Euclidean Classifier", Recognizer.euclideanClassifier,
+            //    rawData);
+            //RightPanel.Children.Add(euclideanRecognizer);
         }
     }
 }

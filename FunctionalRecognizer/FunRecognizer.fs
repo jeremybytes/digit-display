@@ -57,10 +57,23 @@ let train (trainingset:Observation[]) (dist:Distance) =
         |> fun x -> x.Label
     classify
 
+let weightedTrain (trainingset:Observation[]) (dist:Distance) =
+    let classify (pixels:int[]) =
+        trainingset
+        |> Array.map (fun x -> (dist (x.Pixels, pixels, Int32.MaxValue), x))
+        |> Array.sortBy (fun (x,_) -> x)
+        |> Array.take 5
+        |> Array.countBy (fun (_,x) -> x.Label)
+        |> Array.maxBy (fun (_,x) -> x)
+        |> fst
+    classify
+
 let classifier = train trainingData
 
 let manhattanClassifier = train trainingData manhattanDistance
 let euclideanClassifier = train trainingData euclideanDistance
+
+let weightedManhattanClassifier = weightedTrain trainingData manhattanDistance
 
 let evaluate (validationData:Observation[]) classifier =
     validationData
