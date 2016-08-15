@@ -79,7 +79,7 @@ printfn "Weighted Euclidean"
 evaluate validationData weightedEuclideanClassifer
 
 let dist = manhattanDistance
-let pixels = validationData.[2].Pixels
+let pixels = validationData.[12].Pixels
 trainingData
 |> Array.map (fun x -> (dist (x.Pixels, pixels), x))
 |> Array.sortBy (fun (x,_) -> x)
