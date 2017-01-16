@@ -13,12 +13,15 @@ let toObservation (csvData:string) =
     let pixels = columns.[1..] |> Array.map int
     { Label = label; Pixels = pixels }
 
+let trainingFile = FSharp.Configuration.AppSettingsTypeProvider.getConfigValue("app.config", "trainingFile")
+let fileOffset = FSharp.Configuration.AppSettingsTypeProvider.getConfigValue("app.config", "offset") |> Int32.Parse
+let recordCount = FSharp.Configuration.AppSettingsTypeProvider.getConfigValue("app.config", "recordCount") |> Int32.Parse
+
 let reader path = 
     let data = File.ReadAllLines path
-    data.[350..]
+    Array.concat [|data.[1..fileOffset]; data.[fileOffset+recordCount+1..]|]
     |> Array.map toObservation
 
-let trainingFile = FSharp.Configuration.AppSettingsTypeProvider.getConfigValue("app.config", "trainingFile")
 let trainingPath = AppDomain.CurrentDomain.BaseDirectory + trainingFile
 let trainingData = reader trainingPath
 

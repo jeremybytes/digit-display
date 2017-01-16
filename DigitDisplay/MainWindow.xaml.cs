@@ -1,6 +1,7 @@
 ﻿using DigitLoader;
 using Microsoft.FSharp.Core;
 using System;
+using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
@@ -19,6 +20,8 @@ namespace DigitDisplay
         public MainWindow()
         {
             InitializeComponent();
+            Offset.Text = ConfigurationManager.AppSettings["offset"];
+            RecordCount.Text = ConfigurationManager.AppSettings["recordCount"];
         }
 
         private void GoButton_Click(object sender, RoutedEventArgs e)
@@ -29,7 +32,7 @@ namespace DigitDisplay
             int recordCount = int.Parse(RecordCount.Text);
             int offset = int.Parse(Offset.Text);
 
-            string[] rawData = FileLoader.LoadDataStrings(recordCount, offset);
+            string[] rawData = FileLoader.LoadDataStrings(recordCount);
 
             var manhattanRecognizer = new RecognizerControl(
                 "Manhattan Classifier", Recognizer.manhattanClassifier,
