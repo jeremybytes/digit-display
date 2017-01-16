@@ -31,10 +31,10 @@ namespace DigitDisplay
 
             string[] rawData = FileLoader.LoadDataStrings(recordCount, offset);
 
-            var manhattanRecognier = new RecognizerControl(
+            var manhattanRecognizer = new RecognizerControl(
                 "Manhattan Classifier", Recognizer.manhattanClassifier,
                 rawData);
-            LeftPanel.Children.Add(manhattanRecognier);
+            LeftPanel.Children.Add(manhattanRecognizer);
 
             var euclideanRecognizer = new RecognizerControl(
                 "Euclidean Classifier", Recognizer.euclideanClassifier,

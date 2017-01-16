@@ -44,16 +44,17 @@ namespace DigitDisplay
             var tasks = new List<Task<string>>();
             foreach (var imageString in rawData)
             {
+                int actual = imageString.Split(',').Select(x => Convert.ToInt32(x)).First();
                 var task = Task.Run<string>(() =>
                 {
-                    int[] ints = imageString.Split(',').Select(x => Convert.ToInt32(x)).ToArray();
+                    int[] ints = imageString.Split(',').Select(x => Convert.ToInt32(x)).Skip(1).ToArray();
                     return Recognizer.predict<string>(ints, classifier);
                 }
                 );
                 tasks.Add(task);
                 task.ContinueWith(t =>
                 {
-                    CreateUIElements(t.Result, imageString, DigitsBox);
+                    CreateUIElements(t.Result, actual.ToString(), imageString, DigitsBox);
                 },
                     TaskScheduler.FromCurrentSynchronizationContext()
                 );
@@ -61,7 +62,7 @@ namespace DigitDisplay
             Task.WhenAny(tasks).ContinueWith(t => startTime = DateTime.Now);
         }
 
-        private void CreateUIElements(string prediction, string imageData,
+        private void CreateUIElements(string prediction, string actual, string imageData,
             Panel panel)
         {
             Bitmap image = DigitBitmap.GetBitmapFromRawData(imageData);
@@ -88,6 +89,13 @@ namespace DigitDisplay
             var buttonContent = new StackPanel();
             buttonContent.Orientation = Orientation.Horizontal;
             button.Content = buttonContent;
+
+            if (prediction != actual)
+            {
+                button.Background = redBrush;
+                errors++;
+                ErrorBlock.Text = $"Errors: {errors}";
+            }
 
             buttonContent.Children.Add(imageControl);
             buttonContent.Children.Add(textBlock);

@@ -15,7 +15,7 @@ let toObservation (csvData:string) =
 
 let reader path = 
     let data = File.ReadAllLines path
-    data.[1..]
+    data.[350..]
     |> Array.map toObservation
 
 let trainingFile = FSharp.Configuration.AppSettingsTypeProvider.getConfigValue("app.config", "trainingFile")
