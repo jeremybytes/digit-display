@@ -29,10 +29,7 @@ namespace DigitDisplay
             LeftPanel.Children.Clear();
             RightPanel.Children.Clear();
 
-            int recordCount = int.Parse(RecordCount.Text);
-            int offset = int.Parse(Offset.Text);
-
-            string[] rawData = FileLoader.LoadDataStrings(recordCount);
+            string[] rawData = FileLoader.LoadDataStrings();
 
             var manhattanRecognizer = new RecognizerControl(
                 "Manhattan Classifier", Recognizer.manhattanClassifier,

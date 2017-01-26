@@ -8,15 +8,16 @@ namespace DigitLoader
 {
     public class FileLoader
     {
-        public static string[] LoadDataStrings(int threshold = int.MaxValue)
+        public static string[] LoadDataStrings()
         {
             string dataFile = ConfigurationManager.AppSettings["dataFile"];
-            int offset = Int32.Parse(ConfigurationManager.AppSettings["offset"]);
+            int offset = int.Parse(ConfigurationManager.AppSettings["offset"]);
+            int recordCount = int.Parse(ConfigurationManager.AppSettings["recordCount"]);
             string fileName = AppDomain.CurrentDomain.BaseDirectory + dataFile;
 
             var data = File.ReadLines(fileName)
                 .Skip(1 + offset)
-                .Take(threshold)
+                .Take(recordCount)
                 .ToArray();
 
             return data;

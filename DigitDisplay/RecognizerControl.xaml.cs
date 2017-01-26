@@ -53,9 +53,9 @@ namespace DigitDisplay
                 );
                 tasks.Add(task);
                 task.ContinueWith(t =>
-                {
-                    CreateUIElements(t.Result, actual.ToString(), imageString, DigitsBox);
-                },
+                    {
+                        CreateUIElements(t.Result, actual.ToString(), imageString, DigitsBox);
+                    },
                     TaskScheduler.FromCurrentSynchronizationContext()
                 );
             }
