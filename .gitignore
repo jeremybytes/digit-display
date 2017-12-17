@@ -191,3 +191,7 @@ FakesAssemblies/
 /Output/Euclidean_2000.png
 /Output/Euclidean_200.png
 /Output/DigitRecognizerResults.txt
+/.vs/DigitDisplay/v15/Server/sqlite3/db.lock
+/.vs/DigitDisplay/v15/Server/sqlite3/storage.ide
+/.vs/DigitDisplay/v15/Server/sqlite3/storage.ide-shm
+/.vs/DigitDisplay/v15/Server/sqlite3/storage.ide-wal

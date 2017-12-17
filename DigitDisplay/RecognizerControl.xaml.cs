@@ -67,7 +67,7 @@ namespace DigitDisplay
         {
             Bitmap image = DigitBitmap.GetBitmapFromRawData(imageData);
 
-            var multiplier = 1;
+            var multiplier = 1.5;
             var imageControl = new System.Windows.Controls.Image();
             imageControl.Source = image.ToWpfBitmap();
             imageControl.Stretch = Stretch.UniformToFill;
@@ -77,7 +77,7 @@ namespace DigitDisplay
             var textBlock = new TextBlock();
             textBlock.Height = imageControl.Height;
             textBlock.Width = imageControl.Width;
-            textBlock.FontSize = 12 * multiplier;
+            textBlock.FontSize = 12; // * multiplier;
             textBlock.TextAlignment = TextAlignment.Center;
             textBlock.Text = prediction;
 
