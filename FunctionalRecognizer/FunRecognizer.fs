@@ -67,6 +67,7 @@ let classifier = train trainingData
 let manhattanClassifier = train trainingData manhattanDistance
 let euclideanClassifier = train trainingData euclideanDistance
 let nullClassifier (pixels:int[]) = "0"
+let firstPixelClassifier (pixels:int[]) = pixels.[0].ToString()
 
 let evaluate (validationData:Observation[]) classifier =
     validationData

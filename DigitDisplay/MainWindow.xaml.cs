@@ -45,6 +45,11 @@ namespace DigitDisplay
                 "Null Classifier", (FSharpFunc<int[], string>)Recognizer.nullClassifier,
                 rawData);
             RightPanel.Children.Add(nullRecognizer);
+
+            //var firstPixelRecognizer = new RecognizerControl(
+            //    "FirstPixel Classifier", (FSharpFunc<int[], string>)Recognizer.firstPixelClassifier,
+            //    rawData);
+            //LeftPanel.Children.Add(firstPixelRecognizer);
         }
     }
 }
