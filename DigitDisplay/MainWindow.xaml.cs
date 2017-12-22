@@ -31,20 +31,25 @@ namespace DigitDisplay
 
             string[] rawData = FileLoader.LoadDataStrings();
 
+            var parallelManhattanRecognizer = new ParallelRecognizerControl(
+                "Parallel Manhattan Classifier", Recognizer.manhattanClassifier,
+                rawData);
+            LeftPanel.Children.Add(parallelManhattanRecognizer);
+
             var manhattanRecognizer = new RecognizerControl(
                 "Manhattan Classifier", Recognizer.manhattanClassifier,
                 rawData);
-            LeftPanel.Children.Add(manhattanRecognizer);
+            RightPanel.Children.Add(manhattanRecognizer);
 
             //var euclideanRecognizer = new RecognizerControl(
             //    "Euclidean Classifier", Recognizer.euclideanClassifier,
             //    rawData);
             //RightPanel.Children.Add(euclideanRecognizer);
 
-            var nullRecognizer = new RecognizerControl(
-                "Null Classifier", (FSharpFunc<int[], string>)Recognizer.nullClassifier,
-                rawData);
-            RightPanel.Children.Add(nullRecognizer);
+            //var nullRecognizer = new RecognizerControl(
+            //    "Null Classifier", (FSharpFunc<int[], string>)Recognizer.nullClassifier,
+            //    rawData);
+            //RightPanel.Children.Add(nullRecognizer);
 
             //var firstPixelRecognizer = new RecognizerControl(
             //    "FirstPixel Classifier", (FSharpFunc<int[], string>)Recognizer.firstPixelClassifier,
