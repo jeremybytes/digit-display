@@ -18,8 +18,7 @@ namespace DigitDisplay
         string classifierName;
         FSharpFunc<int[], string> classifier;
         string[] rawData;
-        ConcurrentQueue<PredictionData> predictions = new ConcurrentQueue<PredictionData>();
-
+        //ConcurrentQueue<PredictionData> predictions = new ConcurrentQueue<PredictionData>();
 
         DateTimeOffset startTime;
         SolidColorBrush redBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 150, 150));
@@ -53,9 +52,8 @@ namespace DigitDisplay
         private void PopulatePanel(string[] rawData)
         {
             startTime = DateTime.Now;
-            //var tasks = new List<Task<string>>();
-            BlockingCollection<PredictionData> data = new BlockingCollection<PredictionData>();
 
+            BlockingCollection<PredictionData> data = new BlockingCollection<PredictionData>();
 
             var options = new ParallelOptions();
             options.TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
@@ -76,7 +74,6 @@ namespace DigitDisplay
                 );
             });
 
-
             //Parallel.Invoke(options, () =>
             //{
             //    PredictionData d;
@@ -86,25 +83,6 @@ namespace DigitDisplay
             //            CreateUIElements(d.prediction, d.actual, d.imageData, DigitsBox);
             //    }
             //});
-
-            //foreach (var imageString in rawData)
-            //{
-            //    int actual = imageString.Split(',').Select(x => Convert.ToInt32(x)).First();
-            //    var task = Task.Run<string>(() =>
-            //    {
-            //        int[] ints = imageString.Split(',').Select(x => Convert.ToInt32(x)).Skip(1).ToArray();
-            //        return Recognizer.predict<string>(ints, classifier);
-            //    }
-            //    );
-            //    tasks.Add(task);
-            //    task.ContinueWith(t =>
-            //        {
-            //            CreateUIElements(t.Result, actual.ToString(), imageString, DigitsBox);
-            //        },
-            //        TaskScheduler.FromCurrentSynchronizationContext()
-            //    );
-            //}
-            //Task.WhenAny(tasks).ContinueWith(t => startTime = DateTime.Now);
         }
 
         private void CreateUIElements(string prediction, string actual, string imageData,
