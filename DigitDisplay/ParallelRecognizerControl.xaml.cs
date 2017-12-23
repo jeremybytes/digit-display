@@ -53,8 +53,6 @@ namespace DigitDisplay
         {
             startTime = DateTime.Now;
 
-            BlockingCollection<PredictionData> data = new BlockingCollection<PredictionData>();
-
             var options = new ParallelOptions();
             options.TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
@@ -64,7 +62,8 @@ namespace DigitDisplay
                 int[] ints = s.Split(',').Select(x => Convert.ToInt32(x)).Skip(1).ToArray();
                 var result = Recognizer.predict<string>(ints, classifier);
 
-                //predictions.Enqueue(new PredictionData() { prediction = result, actual = act.ToString(), imageData = s });
+                //predictions.Enqueue(new PredictionData() { 
+                //    prediction = result, actual = act.ToString(), imageData = s });
 
                 Task.Factory.StartNew(() =>
                     CreateUIElements(result, act.ToString(), s, DigitsBox),
