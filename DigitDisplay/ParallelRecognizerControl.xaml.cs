@@ -35,11 +35,11 @@ namespace DigitDisplay
             Loaded += RecognizerControl_Loaded;
         }
 
-        private void RecognizerControl_Loaded(object sender, RoutedEventArgs e)
+        private async void RecognizerControl_Loaded(object sender, RoutedEventArgs e)
         {
 
             ClassifierText.Text = classifierName;
-            PopulatePanel(rawData);
+            await PopulatePanelAsync(rawData);
         }
 
         private struct PredictionData
@@ -49,39 +49,22 @@ namespace DigitDisplay
             public string imageData;
         }
 
-        private void PopulatePanel(string[] rawData)
+        private async Task PopulatePanelAsync(string[] rawData)
         {
             startTime = DateTime.Now;
 
-            var options = new ParallelOptions();
-            options.TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            IProgress<(string prediction, string actual, string imageData)> progress = new Progress<(string prediction, string actual, string imageData)>(args =>
+            {
+                CreateUIElements(args.prediction, args.actual, args.imageData, DigitsBox);
+            });
 
-            var loopResult = Parallel.ForEach(rawData, s =>
+            var loopResult = await Task.Run(() => Parallel.ForEach(rawData, s =>
             {
                 int act = s.Split(',').Select(x => Convert.ToInt32(x)).First();
                 int[] ints = s.Split(',').Select(x => Convert.ToInt32(x)).Skip(1).ToArray();
                 var result = Recognizer.predict<string>(ints, classifier);
-
-                //predictions.Enqueue(new PredictionData() { 
-                //    prediction = result, actual = act.ToString(), imageData = s });
-
-                Task.Factory.StartNew(() =>
-                    CreateUIElements(result, act.ToString(), s, DigitsBox),
-                    CancellationToken.None,
-                    TaskCreationOptions.None,
-                    options.TaskScheduler
-                );
-            });
-
-            //Parallel.Invoke(options, () =>
-            //{
-            //    PredictionData d;
-            //    while (predictions.TryDequeue(out d))
-            //    {
-            //        if (d.imageData != null)
-            //            CreateUIElements(d.prediction, d.actual, d.imageData, DigitsBox);
-            //    }
-            //});
+                progress.Report((result, act.ToString(), s));
+            }));
         }
 
         private void CreateUIElements(string prediction, string actual, string imageData,
