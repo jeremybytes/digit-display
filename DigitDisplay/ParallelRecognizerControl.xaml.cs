@@ -41,7 +41,7 @@ namespace DigitDisplay
         {
             startTime = DateTimeOffset.Now;
             var uiContext = SynchronizationContext.Current;
-            Task.Run(() => Parallel.ForEach(input, data =>
+            ThreadPool.QueueUserWorkItem(state => Parallel.ForEach(input, data =>
             {
                 var stringInts = data.Split(',');
                 var result = Recognizer.predict(StringArrayToIntArraySkippingFirstElement(stringInts), classifier);
