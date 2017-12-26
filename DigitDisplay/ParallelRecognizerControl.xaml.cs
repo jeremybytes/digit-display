@@ -1,10 +1,7 @@
 ﻿using DigitLoader;
 using Microsoft.FSharp.Core;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,15 +12,14 @@ namespace DigitDisplay
 {
     public partial class ParallelRecognizerControl : UserControl
     {
-        string classifierName;
-        FSharpFunc<int[], string> classifier;
-        string[] rawData;
-        //ConcurrentQueue<PredictionData> predictions = new ConcurrentQueue<PredictionData>();
+        readonly string classifierName;
+        readonly FSharpFunc<int[], string> classifier;
+        readonly string[] rawData;
 
         DateTimeOffset startTime;
-        SolidColorBrush redBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 150, 150));
-        SolidColorBrush whiteBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
-        int errors = 0;
+        readonly SolidColorBrush redBrush = new SolidColorBrush(Color.FromRgb(255, 150, 150));
+        readonly SolidColorBrush whiteBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+        int errors;
 
         public ParallelRecognizerControl(string classifierName, FSharpFunc<int[], string> classifier,
             string[] rawData)
@@ -37,113 +33,96 @@ namespace DigitDisplay
 
         private void RecognizerControl_Loaded(object sender, RoutedEventArgs e)
         {
-
             ClassifierText.Text = classifierName;
             PopulatePanel(rawData);
         }
 
-        private struct PredictionData
+        private void PopulatePanel(string[] input)
         {
-            public string prediction;
-            public string actual;
-            public string imageData;
+            startTime = DateTimeOffset.Now;
+            var uiContext = SynchronizationContext.Current;
+            Task.Run(() => Parallel.ForEach(input, data =>
+            {
+                var stringInts = data.Split(',');
+                var result = Recognizer.predict(StringArrayToIntArraySkippingFirstElement(stringInts), classifier);
+                uiContext.Post(_ => CreateUIElements(result, stringInts[0], data, DigitsBox), null);
+            }));
         }
 
-        private void PopulatePanel(string[] rawData)
+        private static int[] StringArrayToIntArraySkippingFirstElement(string[] stringInts)
         {
-            startTime = DateTime.Now;
-
-            var options = new ParallelOptions();
-            options.TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-
-            var loopResult = Parallel.ForEach(rawData, s =>
+            var result = new int[stringInts.Length - 1];
+            for (int intIdx = 0, strIdx = 1; intIdx < result.Length; intIdx++, strIdx++)
             {
-                int act = s.Split(',').Select(x => Convert.ToInt32(x)).First();
-                int[] ints = s.Split(',').Select(x => Convert.ToInt32(x)).Skip(1).ToArray();
-                var result = Recognizer.predict<string>(ints, classifier);
-
-                //predictions.Enqueue(new PredictionData() { 
-                //    prediction = result, actual = act.ToString(), imageData = s });
-
-                Task.Factory.StartNew(() =>
-                    CreateUIElements(result, act.ToString(), s, DigitsBox),
-                    CancellationToken.None,
-                    TaskCreationOptions.None,
-                    options.TaskScheduler
-                );
-            });
-
-            //Parallel.Invoke(options, () =>
-            //{
-            //    PredictionData d;
-            //    while (predictions.TryDequeue(out d))
-            //    {
-            //        if (d.imageData != null)
-            //            CreateUIElements(d.prediction, d.actual, d.imageData, DigitsBox);
-            //    }
-            //});
+                result[intIdx] = int.Parse(stringInts[strIdx], NumberStyles.Integer);
+            }
+            return result;
         }
 
         private void CreateUIElements(string prediction, string actual, string imageData,
             Panel panel)
         {
-            Bitmap image = DigitBitmap.GetBitmapFromRawData(imageData);
+            var imageSource = DigitBitmap.GetBitmapFromRawData(imageData).ToWpfBitmap();
+            var scaledSize = new Size(imageSource.Width * 1.5, imageSource.Height * 1.5);
+            var imageControl = new Image
+            {
+                Source = imageSource,
+                Stretch = Stretch.UniformToFill,
+                Width = scaledSize.Width,
+                Height = scaledSize.Height
+            };
 
-            var multiplier = 1.5;
-            var imageControl = new System.Windows.Controls.Image();
-            imageControl.Source = image.ToWpfBitmap();
-            imageControl.Stretch = Stretch.UniformToFill;
-            imageControl.Width = imageControl.Source.Width * multiplier;
-            imageControl.Height = imageControl.Source.Height * multiplier;
-
-            var textBlock = new TextBlock();
-            textBlock.Height = imageControl.Height;
-            textBlock.Width = imageControl.Width;
-            textBlock.FontSize = 12; // * multiplier;
-            textBlock.TextAlignment = TextAlignment.Center;
-            textBlock.Text = prediction;
+            var textBlock = new TextBlock
+            {
+                Height = scaledSize.Height,
+                Width = scaledSize.Width,
+                FontSize = 12,
+                TextAlignment = TextAlignment.Center,
+                Text = prediction
+            };
 
             var button = new Button();
-            var backgroundBrush = whiteBrush;
-            button.Background = backgroundBrush;
             button.Click += ToggleCorrectness;
-
-            var buttonContent = new StackPanel();
-            buttonContent.Orientation = Orientation.Horizontal;
-            button.Content = buttonContent;
-
-            if (prediction != actual)
+            if (prediction == actual)
+            {
+                button.Background = whiteBrush;
+            }
+            else
             {
                 button.Background = redBrush;
-                errors++;
-                ErrorBlock.Text = $"Errors: {errors}";
+                ChangeErrorsCount(1);
             }
 
+            var buttonContent = new StackPanel {Orientation = Orientation.Horizontal};
             buttonContent.Children.Add(imageControl);
             buttonContent.Children.Add(textBlock);
-
+            button.Content = buttonContent;
             panel.Children.Add(button);
-
-            TimeSpan duration = DateTimeOffset.Now - startTime;
-            TimingBlock.Text = $"Duration (seconds): {duration.TotalSeconds:0}";
+            
+            TimingBlock.Text = "Duration (seconds): " + (DateTimeOffset.Now - startTime).TotalSeconds.ToString("0");
         }
 
         private void ToggleCorrectness(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            if (button == null) return;
+            switch (sender)
+            {
+                case Button whiteButton when ReferenceEquals(whiteButton.Background, whiteBrush):
+                    whiteButton.Background = redBrush;
+                    ChangeErrorsCount(1);
+                    break;
+                case Button redButton when ReferenceEquals(redButton.Background, redBrush):
+                    redButton.Background = whiteBrush;
+                    ChangeErrorsCount(-1);
+                    break;
+                default:
+                    return;
+            }
+        }
 
-            if (button.Background == whiteBrush)
-            {
-                button.Background = redBrush;
-                errors++;
-            }
-            else
-            {
-                button.Background = whiteBrush;
-                errors--;
-            }
-            ErrorBlock.Text = $"Errors: {errors}";
+        private void ChangeErrorsCount(int errorDiff)
+        {
+            errors += errorDiff;
+            ErrorBlock.Text = "Errors: " + errors.ToString("0");
         }
     }
 }
