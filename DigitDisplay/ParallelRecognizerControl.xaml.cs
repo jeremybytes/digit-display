@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -35,11 +36,11 @@ namespace DigitDisplay
             Loaded += RecognizerControl_Loaded;
         }
 
-        private void RecognizerControl_Loaded(object sender, RoutedEventArgs e)
+        private async void RecognizerControl_Loaded(object sender, RoutedEventArgs e)
         {
 
             ClassifierText.Text = classifierName;
-            PopulatePanel(rawData);
+            await PopulatePanel(rawData);
         }
 
         private struct PredictionData
@@ -49,39 +50,53 @@ namespace DigitDisplay
             public string imageData;
         }
 
-        private void PopulatePanel(string[] rawData)
+        private async Task PopulatePanel(string[] rawData)
         {
             startTime = DateTime.Now;
 
-            var options = new ParallelOptions();
-            options.TaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            var pipeline = BuildPipeline();
 
-            var loopResult = Parallel.ForEach(rawData, s =>
+            foreach (var s in rawData)
             {
-                int act = s.Split(',').Select(x => Convert.ToInt32(x)).First();
-                int[] ints = s.Split(',').Select(x => Convert.ToInt32(x)).Skip(1).ToArray();
-                var result = Recognizer.predict<string>(ints, classifier);
+                pipeline.Post(s);
+            }
+            
+            pipeline.Complete();
+            await pipeline.Completion;
+        }
 
-                //predictions.Enqueue(new PredictionData() { 
-                //    prediction = result, actual = act.ToString(), imageData = s });
-
-                Task.Factory.StartNew(() =>
-                    CreateUIElements(result, act.ToString(), s, DigitsBox),
-                    CancellationToken.None,
-                    TaskCreationOptions.None,
-                    options.TaskScheduler
-                );
+        private TransformBlock<string, (string act, int[] ints, string s)> BuildPipeline()
+        {
+            var transform = new TransformBlock<string, (string act, int[] ints, string s)>(s =>
+            {
+                var split = s.Split(',');
+                var act = split.First();
+                var ints = split.Skip(1).Select(x => Convert.ToInt32(x)).ToArray();
+                return (act: act, ints: ints, s: s);
             });
 
-            //Parallel.Invoke(options, () =>
-            //{
-            //    PredictionData d;
-            //    while (predictions.TryDequeue(out d))
-            //    {
-            //        if (d.imageData != null)
-            //            CreateUIElements(d.prediction, d.actual, d.imageData, DigitsBox);
-            //    }
-            //});
+            var compute =
+                new TransformBlock<(string act, int[] ints, string s), (string act, int[] ints, string s, string result)
+                >(
+                    tuple =>
+                    {
+                        var result = Recognizer.predict<string>(tuple.ints, classifier);
+                        return (act: tuple.act, ints: tuple.ints, s: tuple.s, result: result);
+                    },
+                    new ExecutionDataflowBlockOptions
+                    {
+                        MaxDegreeOfParallelism = Math.Max(Environment.ProcessorCount - 1, 1)
+                    });
+
+            var output = new ActionBlock<(string act, int[] ints, string s, string result)>(tuple =>
+                {
+                    Dispatcher.Invoke(() => CreateUIElements(tuple.result, tuple.act, tuple.s, DigitsBox));
+                });
+
+            transform.LinkTo(compute);
+            compute.LinkTo(output);
+
+            return transform;
         }
 
         private void CreateUIElements(string prediction, string actual, string imageData,
