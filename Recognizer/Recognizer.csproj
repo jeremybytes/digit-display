@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CSharp</RootNamespace>
     <AssemblyName>CSharp</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -42,17 +43,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicClassifier.cs" />
-    <Compile Include="DataReader.cs" />
     <Compile Include="Evaluator.cs" />
     <Compile Include="IClassifier.cs" />
     <Compile Include="IDistance.cs" />
     <Compile Include="ManhattanDistance.cs" />
-    <Compile Include="Observation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ObservationLoader\ObservationLoader.csproj">
+      <Project>{301ec918-d5e6-4c89-9cd0-84c35fc7413c}</Project>
+      <Name>ObservationLoader</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

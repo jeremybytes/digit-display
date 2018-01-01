@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
 
 namespace DigitLoader
 {
     public class DigitBitmap
     {
-        public static int[][] GenerateDigitArray(string input)
+        public static int[][] GenerateDigitArray(int[] integerData)
         {
-            var rawData = input.Split(',');
-            var integerData = rawData
-                //.Skip(1)
-                .Select(x => Convert.ToInt32(x))
-                .ToArray();
-
             var output = new int[28][];
             for (int i = 0; i < 28; i++)
             {
@@ -26,7 +18,7 @@ namespace DigitLoader
             return output;
         }
 
-        public static Bitmap GetBitmapFromRawData(string input)
+        public static Bitmap GetBitmapFromRawData(int[] input)
         {
             var digitArray = GenerateDigitArray(input);
 
@@ -42,6 +34,5 @@ namespace DigitLoader
             digitBitmap.MakeTransparent(Color.White);
             return digitBitmap;
         }
-
     }
 }

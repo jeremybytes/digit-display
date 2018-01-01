@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ObservationLoader;
 
 namespace CSharp
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             var distance = new ManhattanDistance();
             var classifier = new BasicClassifier(distance);

@@ -1,22 +1,15 @@
-﻿using DigitLoader;
-using Microsoft.FSharp.Core;
-using System;
+﻿using System;
+using DigitLoader;
 using System.Configuration;
-using System.Drawing;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
+using ObservationLoader;
 
 namespace DigitDisplay
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
-        SolidColorBrush redBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 150, 150));
-        SolidColorBrush whiteBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
-
         public MainWindow()
         {
             InitializeComponent();
@@ -29,32 +22,41 @@ namespace DigitDisplay
             LeftPanel.Children.Clear();
             RightPanel.Children.Clear();
 
-            string[] rawData = FileLoader.LoadDataStrings();
+            var rawData = FileLoader.LoadObservations();
 
-            var parallelManhattanRecognizer = new ParallelRecognizerControl(
-                "Parallel Manhattan Classifier", Recognizer.manhattanClassifier,
+            var parallelManhattanRecognizer = new RecognizerUserControl(
+                "Parallel Manhattan Classifier", DispatchManhattanParallelForEach,
                 rawData);
             LeftPanel.Children.Add(parallelManhattanRecognizer);
 
-            var manhattanRecognizer = new RecognizerControl(
-                "Manhattan Classifier", Recognizer.manhattanClassifier,
+            var manhattanRecognizer = new RecognizerUserControl(
+                "Manhattan Classifier", DispatchManhattanTasks,
                 rawData);
             RightPanel.Children.Add(manhattanRecognizer);
+        }
 
-            //var euclideanRecognizer = new RecognizerControl(
-            //    "Euclidean Classifier", Recognizer.euclideanClassifier,
-            //    rawData);
-            //RightPanel.Children.Add(euclideanRecognizer);
+        private static void DispatchManhattanParallelForEach((Observation observation, Action<string> showResult)[] input)
+        {
+            var uiContext = SynchronizationContext.Current;
+            ThreadPool.QueueUserWorkItem(state => Parallel.ForEach(input, current =>
+            {
+                var predicted = Recognizer.predict(current.observation.Pixels, Recognizer.manhattanClassifier);
+                uiContext.Post(_ => current.showResult(predicted), null);
+            }));
+        }
 
-            //var nullRecognizer = new RecognizerControl(
-            //    "Null Classifier", (FSharpFunc<int[], string>)Recognizer.nullClassifier,
-            //    rawData);
-            //RightPanel.Children.Add(nullRecognizer);
-
-            //var firstPixelRecognizer = new RecognizerControl(
-            //    "FirstPixel Classifier", (FSharpFunc<int[], string>)Recognizer.firstPixelClassifier,
-            //    rawData);
-            //LeftPanel.Children.Add(firstPixelRecognizer);
+        private static void DispatchManhattanTasks((Observation observation, Action<string> showResult)[] input)
+        {
+            foreach (var current in input)
+            {
+                Task
+                    .Run(() => Recognizer.predict(current.observation.Pixels, Recognizer.manhattanClassifier))
+                    .ContinueWith(t =>
+                        {
+                            current.showResult(t.Result);
+                        },
+                        TaskScheduler.FromCurrentSynchronizationContext());
+            }
         }
     }
 }
