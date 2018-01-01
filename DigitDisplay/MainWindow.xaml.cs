@@ -1,7 +1,11 @@
-﻿using DigitLoader;
+﻿using System;
+using DigitLoader;
 using System.Configuration;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using ObservationLoader;
 
 namespace DigitDisplay
 {
@@ -24,15 +28,39 @@ namespace DigitDisplay
 
             var rawData = FileLoader.LoadObservations();
 
-            var parallelManhattanRecognizer = new ParallelRecognizerControl(
-                "Parallel Manhattan Classifier", Recognizer.manhattanClassifier,
+            var parallelManhattanRecognizer = new RecognizerUserControl(
+                "Parallel Manhattan Classifier", DispatchManhattanParallelForEach,
                 rawData);
             LeftPanel.Children.Add(parallelManhattanRecognizer);
 
-            var manhattanRecognizer = new RecognizerControl(
-                "Manhattan Classifier", Recognizer.manhattanClassifier,
+            var manhattanRecognizer = new RecognizerUserControl(
+                "Manhattan Classifier", DispatchManhattanTasks,
                 rawData);
             RightPanel.Children.Add(manhattanRecognizer);
+        }
+
+        private static void DispatchManhattanParallelForEach((Observation observation, Action<string> showResult)[] input)
+        {
+            var uiContext = SynchronizationContext.Current;
+            ThreadPool.QueueUserWorkItem(state => Parallel.ForEach(input, current =>
+            {
+                var predicted = Recognizer.predict(current.observation.Pixels, Recognizer.manhattanClassifier);
+                uiContext.Post(_ => current.showResult(predicted), null);
+            }));
+        }
+
+        private static void DispatchManhattanTasks((Observation observation, Action<string> showResult)[] input)
+        {
+            foreach (var current in input)
+            {
+                Task
+                    .Run(() => Recognizer.predict(current.observation.Pixels, Recognizer.manhattanClassifier))
+                    .ContinueWith(t =>
+                        {
+                            current.showResult(t.Result);
+                        },
+                        TaskScheduler.FromCurrentSynchronizationContext());
+            }
         }
     }
 }
