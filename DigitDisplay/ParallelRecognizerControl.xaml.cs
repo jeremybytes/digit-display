@@ -40,7 +40,6 @@ namespace DigitDisplay
         {
             startTime = DateTimeOffset.Now;
             var uiContext = SynchronizationContext.Current;
-            Parallel.ForEach(input, (data, state, idx) => { });
             ThreadPool.QueueUserWorkItem(state => Parallel.ForEach(input, data =>
             {
                 var result = Recognizer.predict(data.Pixels, classifier);
