@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using ObservationLoader;
 
 namespace DigitDisplay
@@ -39,30 +40,28 @@ namespace DigitDisplay
         {
             startTime = DateTimeOffset.Now;
             var uiContext = SynchronizationContext.Current;
+            Parallel.ForEach(input, (data, state, idx) => { });
             ThreadPool.QueueUserWorkItem(state => Parallel.ForEach(input, data =>
             {
-                
                 var result = Recognizer.predict(data.Pixels, classifier);
-                uiContext.Post(_ => CreateUIElements(result, data.Label, data.Pixels, DigitsBox), null);
+                var imageSource = DigitBitmap.GetBitmapFromRawData(data.Pixels).ToWpfBitmap();
+                uiContext.Post(_ => CreateUIElements(result, data.Label, imageSource, DigitsBox), null);
             }));
         }
 
-        private void CreateUIElements(string prediction, string actual, int[] imageData, Panel panel)
+        private void CreateUIElements(string prediction, string actual, ImageSource imageSource, Panel panel)
         {
-            var imageSource = DigitBitmap.GetBitmapFromRawData(imageData).ToWpfBitmap();
-            var scaledSize = new Size(imageSource.Width * 1.5, imageSource.Height * 1.5);
-            var imageControl = new Image
+            var image = new Image
             {
                 Source = imageSource,
                 Stretch = Stretch.UniformToFill,
-                Width = scaledSize.Width,
-                Height = scaledSize.Height
+                Width = imageSource.Width * 1.5,
+                Height = imageSource.Height * 1.5
             };
-
             var textBlock = new TextBlock
             {
-                Height = scaledSize.Height,
-                Width = scaledSize.Width,
+                Height = image.Height,
+                Width = image.Width,
                 FontSize = 12,
                 TextAlignment = TextAlignment.Center,
                 Text = prediction
@@ -81,7 +80,7 @@ namespace DigitDisplay
             }
 
             var buttonContent = new StackPanel {Orientation = Orientation.Horizontal};
-            buttonContent.Children.Add(imageControl);
+            buttonContent.Children.Add(image);
             buttonContent.Children.Add(textBlock);
             button.Content = buttonContent;
             panel.Children.Add(button);

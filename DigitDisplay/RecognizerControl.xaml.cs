@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using ObservationLoader;
 
 namespace DigitDisplay
@@ -39,47 +40,47 @@ namespace DigitDisplay
 
         private void PopulatePanel(Observation[] rawData)
         {
-            var tasks = new List<Task<string>>();
+            startTime = DateTime.Now;
             foreach (var observation in rawData)
             {
-                var task = Task.Run<string>(() => Recognizer.predict(observation.Pixels, classifier));
-                tasks.Add(task);
+                var task = Task.Run(() => (Recognizer.predict(observation.Pixels, classifier), DigitBitmap.GetBitmapFromRawData(observation.Pixels).ToWpfBitmap()));
                 task.ContinueWith(t =>
                     {
-                        CreateUIElements(t.Result, observation.Label, observation, DigitsBox);
+                        var (recognized, image) = t.Result;
+                        CreateUIElements(recognized, observation.Label, image, DigitsBox);
                     },
                     TaskScheduler.FromCurrentSynchronizationContext()
                 );
             }
-            Task.WhenAny(tasks).ContinueWith(t => startTime = DateTime.Now);
         }
 
-        private void CreateUIElements(string prediction, string actual, Observation imageData,
+        private void CreateUIElements(string prediction, string actual, BitmapSource image,
             Panel panel)
         {
-            Bitmap image = DigitBitmap.GetBitmapFromRawData(imageData.Pixels);
-
             var multiplier = 1.5;
-            var imageControl = new System.Windows.Controls.Image();
-            imageControl.Source = image.ToWpfBitmap();
-            imageControl.Stretch = Stretch.UniformToFill;
-            imageControl.Width = imageControl.Source.Width * multiplier;
-            imageControl.Height = imageControl.Source.Height * multiplier;
+            var imageControl = new System.Windows.Controls.Image
+            {
+                Source = image,
+                Stretch = Stretch.UniformToFill,
+                Width = image.Width * multiplier,
+                Height = image.Height * multiplier
+            };
 
-            var textBlock = new TextBlock();
-            textBlock.Height = imageControl.Height;
-            textBlock.Width = imageControl.Width;
-            textBlock.FontSize = 12; // * multiplier;
-            textBlock.TextAlignment = TextAlignment.Center;
-            textBlock.Text = prediction;
+            var textBlock = new TextBlock
+            {
+                Height = imageControl.Height,
+                Width = imageControl.Width,
+                FontSize = 12,
+                TextAlignment = TextAlignment.Center,
+                Text = prediction
+            };
 
             var button = new Button();
             var backgroundBrush = MainWindow.WhiteBrush;
             button.Background = backgroundBrush;
             button.Click += ToggleCorrectness;
 
-            var buttonContent = new StackPanel();
-            buttonContent.Orientation = Orientation.Horizontal;
+            var buttonContent = new StackPanel {Orientation = Orientation.Horizontal};
             button.Content = buttonContent;
 
             if (prediction != actual)
