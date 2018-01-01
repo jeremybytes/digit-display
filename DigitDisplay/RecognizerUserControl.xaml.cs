@@ -23,9 +23,8 @@ namespace DigitDisplay
 
         private void PopulatePanel(Observation[] input, Action<(Observation, Action<string>)[]> dispatcher)
         {
-            
-            _startTime = DateTimeOffset.Now;
             (Observation, Action<string>)[] toDispatch = input.Zip(input.Select(CreateButton), (observation, show) => (observation, show)).ToArray();
+            _startTime = DateTimeOffset.Now;
             dispatcher(toDispatch);
         }
 
