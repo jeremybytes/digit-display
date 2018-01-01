@@ -4,16 +4,12 @@ using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 using ObservationLoader;
 
 namespace DigitDisplay
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
-        public static readonly SolidColorBrush RedBrush = new SolidColorBrush(Color.FromRgb(255, 150, 150));
-        public static readonly SolidColorBrush WhiteBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-
         public MainWindow()
         {
             InitializeComponent();

@@ -8,8 +8,11 @@ using ObservationLoader;
 
 namespace DigitDisplay
 {
-    public partial class RecognizerUserControl : UserControl
+    public partial class RecognizerUserControl
     {
+        private static readonly SolidColorBrush RedBrush = new SolidColorBrush(Color.FromRgb(255, 150, 150));
+        private static readonly SolidColorBrush WhiteBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+
         private DateTimeOffset _startTime;
         private int _errors;
         public RecognizerUserControl(string classifierName, Action<(Observation, Action<string>)[]> dispatcher,
@@ -48,7 +51,7 @@ namespace DigitDisplay
 
             var button = new Button();
             button.Click += ToggleCorrectness;
-            button.Background = MainWindow.WhiteBrush;
+            button.Background = WhiteBrush;
 
             var buttonContent = new StackPanel { Orientation = Orientation.Horizontal };
             buttonContent.Children.Add(image);
@@ -60,7 +63,7 @@ namespace DigitDisplay
                 textBlock.Text = predicted;
                 if (predicted != observation.Label)
                 {
-                    button.Background = MainWindow.RedBrush;
+                    button.Background = RedBrush;
                     ChangeErrorsCount(1);
                 }
                 DigitsBox.Children.Add(button);
@@ -75,12 +78,12 @@ namespace DigitDisplay
         {
             switch (sender)
             {
-                case Button whiteButton when ReferenceEquals(whiteButton.Background, MainWindow.WhiteBrush):
-                    whiteButton.Background = MainWindow.RedBrush;
+                case Button whiteButton when ReferenceEquals(whiteButton.Background, WhiteBrush):
+                    whiteButton.Background = RedBrush;
                     ChangeErrorsCount(1);
                     break;
-                case Button redButton when ReferenceEquals(redButton.Background, MainWindow.RedBrush):
-                    redButton.Background = MainWindow.WhiteBrush;
+                case Button redButton when ReferenceEquals(redButton.Background, RedBrush):
+                    redButton.Background = WhiteBrush;
                     ChangeErrorsCount(-1);
                     break;
                 default:
