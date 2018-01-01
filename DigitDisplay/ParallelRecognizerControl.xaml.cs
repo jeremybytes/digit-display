@@ -1,12 +1,12 @@
 ﻿using DigitLoader;
 using Microsoft.FSharp.Core;
 using System;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using ObservationLoader;
 
 namespace DigitDisplay
 {
@@ -14,15 +14,13 @@ namespace DigitDisplay
     {
         readonly string classifierName;
         readonly FSharpFunc<int[], string> classifier;
-        readonly string[] rawData;
+        readonly Observation[] rawData;
 
         DateTimeOffset startTime;
-        readonly SolidColorBrush redBrush = new SolidColorBrush(Color.FromRgb(255, 150, 150));
-        readonly SolidColorBrush whiteBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
         int errors;
 
         public ParallelRecognizerControl(string classifierName, FSharpFunc<int[], string> classifier,
-            string[] rawData)
+            Observation[] rawData)
         {
             InitializeComponent();
             this.classifierName = classifierName;
@@ -37,30 +35,19 @@ namespace DigitDisplay
             PopulatePanel(rawData);
         }
 
-        private void PopulatePanel(string[] input)
+        private void PopulatePanel(Observation[] input)
         {
             startTime = DateTimeOffset.Now;
             var uiContext = SynchronizationContext.Current;
             ThreadPool.QueueUserWorkItem(state => Parallel.ForEach(input, data =>
             {
-                var stringInts = data.Split(',');
-                var result = Recognizer.predict(StringArrayToIntArraySkippingFirstElement(stringInts), classifier);
-                uiContext.Post(_ => CreateUIElements(result, stringInts[0], data, DigitsBox), null);
+                
+                var result = Recognizer.predict(data.Pixels, classifier);
+                uiContext.Post(_ => CreateUIElements(result, data.Label, data.Pixels, DigitsBox), null);
             }));
         }
 
-        private static int[] StringArrayToIntArraySkippingFirstElement(string[] stringInts)
-        {
-            var result = new int[stringInts.Length - 1];
-            for (int intIdx = 0, strIdx = 1; intIdx < result.Length; intIdx++, strIdx++)
-            {
-                result[intIdx] = int.Parse(stringInts[strIdx], NumberStyles.Integer);
-            }
-            return result;
-        }
-
-        private void CreateUIElements(string prediction, string actual, string imageData,
-            Panel panel)
+        private void CreateUIElements(string prediction, string actual, int[] imageData, Panel panel)
         {
             var imageSource = DigitBitmap.GetBitmapFromRawData(imageData).ToWpfBitmap();
             var scaledSize = new Size(imageSource.Width * 1.5, imageSource.Height * 1.5);
@@ -85,11 +72,11 @@ namespace DigitDisplay
             button.Click += ToggleCorrectness;
             if (prediction == actual)
             {
-                button.Background = whiteBrush;
+                button.Background = MainWindow.WhiteBrush;
             }
             else
             {
-                button.Background = redBrush;
+                button.Background = MainWindow.RedBrush;
                 ChangeErrorsCount(1);
             }
 
@@ -106,12 +93,12 @@ namespace DigitDisplay
         {
             switch (sender)
             {
-                case Button whiteButton when ReferenceEquals(whiteButton.Background, whiteBrush):
-                    whiteButton.Background = redBrush;
+                case Button whiteButton when ReferenceEquals(whiteButton.Background, MainWindow.WhiteBrush):
+                    whiteButton.Background = MainWindow.RedBrush;
                     ChangeErrorsCount(1);
                     break;
-                case Button redButton when ReferenceEquals(redButton.Background, redBrush):
-                    redButton.Background = whiteBrush;
+                case Button redButton when ReferenceEquals(redButton.Background, MainWindow.RedBrush):
+                    redButton.Background = MainWindow.WhiteBrush;
                     ChangeErrorsCount(-1);
                     break;
                 default:

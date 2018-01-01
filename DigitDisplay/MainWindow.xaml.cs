@@ -22,7 +22,7 @@ namespace DigitDisplay
             LeftPanel.Children.Clear();
             RightPanel.Children.Clear();
 
-            string[] rawData = FileLoader.LoadDataStrings();
+            var rawData = FileLoader.LoadObservations();
 
             var parallelManhattanRecognizer = new ParallelRecognizerControl(
                 "Parallel Manhattan Classifier", Recognizer.manhattanClassifier,

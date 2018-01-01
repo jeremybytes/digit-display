@@ -3,11 +3,11 @@ using Microsoft.FSharp.Core;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using ObservationLoader;
 
 namespace DigitDisplay
 {
@@ -15,15 +15,13 @@ namespace DigitDisplay
     {
         string classifierName;
         FSharpFunc<int[], string> classifier;
-        string[] rawData;
+        Observation[] rawData;
 
         DateTimeOffset startTime;
-        SolidColorBrush redBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 150, 150));
-        SolidColorBrush whiteBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
         int errors = 0;
 
         public RecognizerControl(string classifierName, FSharpFunc<int[], string> classifier,
-            string[] rawData)
+            Observation[] rawData)
         {
             InitializeComponent();
             this.classifierName = classifierName;
@@ -39,22 +37,16 @@ namespace DigitDisplay
             PopulatePanel(rawData);
         }
 
-        private void PopulatePanel(string[] rawData)
+        private void PopulatePanel(Observation[] rawData)
         {
             var tasks = new List<Task<string>>();
-            foreach (var imageString in rawData)
+            foreach (var observation in rawData)
             {
-                int actual = imageString.Split(',').Select(x => Convert.ToInt32(x)).First();
-                var task = Task.Run<string>(() =>
-                {
-                    int[] ints = imageString.Split(',').Select(x => Convert.ToInt32(x)).Skip(1).ToArray();
-                    return Recognizer.predict<string>(ints, classifier);
-                }
-                );
+                var task = Task.Run<string>(() => Recognizer.predict(observation.Pixels, classifier));
                 tasks.Add(task);
                 task.ContinueWith(t =>
                     {
-                        CreateUIElements(t.Result, actual.ToString(), imageString, DigitsBox);
+                        CreateUIElements(t.Result, observation.Label, observation, DigitsBox);
                     },
                     TaskScheduler.FromCurrentSynchronizationContext()
                 );
@@ -62,10 +54,10 @@ namespace DigitDisplay
             Task.WhenAny(tasks).ContinueWith(t => startTime = DateTime.Now);
         }
 
-        private void CreateUIElements(string prediction, string actual, string imageData,
+        private void CreateUIElements(string prediction, string actual, Observation imageData,
             Panel panel)
         {
-            Bitmap image = DigitBitmap.GetBitmapFromRawData(imageData);
+            Bitmap image = DigitBitmap.GetBitmapFromRawData(imageData.Pixels);
 
             var multiplier = 1.5;
             var imageControl = new System.Windows.Controls.Image();
@@ -82,7 +74,7 @@ namespace DigitDisplay
             textBlock.Text = prediction;
 
             var button = new Button();
-            var backgroundBrush = whiteBrush;
+            var backgroundBrush = MainWindow.WhiteBrush;
             button.Background = backgroundBrush;
             button.Click += ToggleCorrectness;
 
@@ -92,7 +84,7 @@ namespace DigitDisplay
 
             if (prediction != actual)
             {
-                button.Background = redBrush;
+                button.Background = MainWindow.RedBrush;
                 errors++;
                 ErrorBlock.Text = $"Errors: {errors}";
             }
@@ -111,14 +103,14 @@ namespace DigitDisplay
             var button = sender as Button;
             if (button == null) return;
 
-            if (button.Background == whiteBrush)
+            if (button.Background == MainWindow.WhiteBrush)
             {
-                button.Background = redBrush;
+                button.Background = MainWindow.RedBrush;
                 errors++;
             }
             else
             {
-                button.Background = whiteBrush;
+                button.Background = MainWindow.WhiteBrush;
                 errors--;
             }
             ErrorBlock.Text = $"Errors: {errors}";
