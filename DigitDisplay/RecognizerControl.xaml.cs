@@ -1,8 +1,6 @@
 ﻿using DigitLoader;
 using Microsoft.FSharp.Core;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,7 +38,7 @@ namespace DigitDisplay
 
         private void PopulatePanel(Observation[] rawData)
         {
-            startTime = DateTime.Now;
+            startTime = DateTimeOffset.Now;
             foreach (var observation in rawData)
             {
                 var task = Task.Run(() => (Recognizer.predict(observation.Pixels, classifier), DigitBitmap.GetBitmapFromRawData(observation.Pixels).ToWpfBitmap()));
@@ -58,7 +56,7 @@ namespace DigitDisplay
             Panel panel)
         {
             var multiplier = 1.5;
-            var imageControl = new System.Windows.Controls.Image
+            var imageControl = new Image
             {
                 Source = image,
                 Stretch = Stretch.UniformToFill,
@@ -86,8 +84,7 @@ namespace DigitDisplay
             if (prediction != actual)
             {
                 button.Background = MainWindow.RedBrush;
-                errors++;
-                ErrorBlock.Text = $"Errors: {errors}";
+                ChangeErrorsCount(1);
             }
 
             buttonContent.Children.Add(imageControl);
@@ -95,26 +92,30 @@ namespace DigitDisplay
 
             panel.Children.Add(button);
 
-            TimeSpan duration = DateTimeOffset.Now - startTime;
-            TimingBlock.Text = $"Duration (seconds): {duration.TotalSeconds:0}";
+            TimingBlock.Text = "Duration (seconds): " + (DateTimeOffset.Now - startTime).TotalSeconds.ToString("0");
         }
 
         private void ToggleCorrectness(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            if (button == null) return;
+            switch (sender)
+            {
+                case Button whiteButton when ReferenceEquals(whiteButton.Background, MainWindow.WhiteBrush):
+                    whiteButton.Background = MainWindow.RedBrush;
+                    ChangeErrorsCount(1);
+                    break;
+                case Button redButton when ReferenceEquals(redButton.Background, MainWindow.RedBrush):
+                    redButton.Background = MainWindow.WhiteBrush;
+                    ChangeErrorsCount(-1);
+                    break;
+                default:
+                    return;
+            }
+        }
 
-            if (button.Background == MainWindow.WhiteBrush)
-            {
-                button.Background = MainWindow.RedBrush;
-                errors++;
-            }
-            else
-            {
-                button.Background = MainWindow.WhiteBrush;
-                errors--;
-            }
-            ErrorBlock.Text = $"Errors: {errors}";
+        private void ChangeErrorsCount(int errorDiff)
+        {
+            errors += errorDiff;
+            ErrorBlock.Text = "Errors: " + errors.ToString("0");
         }
     }
 }
