@@ -30,7 +30,7 @@ namespace DigitDisplay
             LeftPanel.Children.Add(manhattanRecognizer);
 
             var euclideanRecognizer = new RecognizerUserControl(
-                "Euclidean Classifier", DispatchManhattanParallelForEach,
+                "Euclidean Classifier", DispatchEuclideanParallelForEach,
                 rawData);
             RightPanel.Children.Add(euclideanRecognizer);
 
@@ -46,6 +46,16 @@ namespace DigitDisplay
             ThreadPool.QueueUserWorkItem(state => Parallel.ForEach(input, current =>
             {
                 var predicted = Recognizer.predict(current.observation.Pixels, Recognizer.manhattanClassifier);
+                uiContext.Post(_ => current.showResult(predicted), null);
+            }));
+        }
+
+        private static void DispatchEuclideanParallelForEach((Observation observation, Action<string> showResult)[] input)
+        {
+            var uiContext = SynchronizationContext.Current;
+            ThreadPool.QueueUserWorkItem(state => Parallel.ForEach(input, current =>
+            {
+                var predicted = Recognizer.predict(current.observation.Pixels, Recognizer.euclideanClassifier);
                 uiContext.Post(_ => current.showResult(predicted), null);
             }));
         }
