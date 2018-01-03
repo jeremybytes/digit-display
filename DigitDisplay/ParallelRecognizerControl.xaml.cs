@@ -1,11 +1,8 @@
 ﻿using DigitLoader;
 using Microsoft.FSharp.Core;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows;
@@ -19,7 +16,6 @@ namespace DigitDisplay
         string classifierName;
         FSharpFunc<int[], string> classifier;
         string[] rawData;
-        //ConcurrentQueue<PredictionData> predictions = new ConcurrentQueue<PredictionData>();
 
         DateTimeOffset startTime;
         SolidColorBrush redBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 150, 150));
@@ -41,13 +37,6 @@ namespace DigitDisplay
 
             ClassifierText.Text = classifierName;
             await PopulatePanel(rawData);
-        }
-
-        private struct PredictionData
-        {
-            public string prediction;
-            public string actual;
-            public string imageData;
         }
 
         private async Task PopulatePanel(string[] rawData)
