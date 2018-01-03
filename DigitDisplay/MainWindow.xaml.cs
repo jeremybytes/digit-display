@@ -32,19 +32,14 @@ namespace DigitDisplay
             string[] rawData = FileLoader.LoadDataStrings();
 
             var parallelManhattanRecognizer = new ParallelRecognizerControl(
-                "Parallel Manhattan Classifier", Recognizer.manhattanClassifier,
+                "Manhattan Classifier", Recognizer.manhattanClassifier,
                 rawData);
             LeftPanel.Children.Add(parallelManhattanRecognizer);
 
-            var manhattanRecognizer = new RecognizerControl(
-                "Manhattan Classifier", Recognizer.manhattanClassifier,
+            var euclideanRecognizer = new ParallelRecognizerControl(
+                "Euclidean Classifier", Recognizer.euclideanClassifier,
                 rawData);
-            RightPanel.Children.Add(manhattanRecognizer);
-
-            //var euclideanRecognizer = new RecognizerControl(
-            //    "Euclidean Classifier", Recognizer.euclideanClassifier,
-            //    rawData);
-            //RightPanel.Children.Add(euclideanRecognizer);
+            RightPanel.Children.Add(euclideanRecognizer);
 
             //var nullRecognizer = new RecognizerControl(
             //    "Null Classifier", (FSharpFunc<int[], string>)Recognizer.nullClassifier,
