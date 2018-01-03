@@ -24,15 +24,20 @@ namespace DigitDisplay
 
             var rawData = FileLoader.LoadObservations();
 
-            var parallelManhattanRecognizer = new RecognizerUserControl(
-                "Parallel Manhattan Classifier", DispatchManhattanParallelForEach,
-                rawData);
-            LeftPanel.Children.Add(parallelManhattanRecognizer);
-
             var manhattanRecognizer = new RecognizerUserControl(
-                "Manhattan Classifier", DispatchManhattanTasks,
+                "Manhattan Classifier", DispatchManhattanParallelForEach,
                 rawData);
-            RightPanel.Children.Add(manhattanRecognizer);
+            LeftPanel.Children.Add(manhattanRecognizer);
+
+            var euclideanRecognizer = new RecognizerUserControl(
+                "Euclidean Classifier", DispatchManhattanParallelForEach,
+                rawData);
+            RightPanel.Children.Add(euclideanRecognizer);
+
+            //var manhattanRecognizer = new RecognizerUserControl(
+            //    "Manhattan Classifier", DispatchManhattanTasks,
+            //    rawData);
+            //RightPanel.Children.Add(manhattanRecognizer);
         }
 
         private static void DispatchManhattanParallelForEach((Observation observation, Action<string> showResult)[] input)
