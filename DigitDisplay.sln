@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitDisplay", "DigitDisplay\DigitDisplay.csproj", "{8E1C0000-6DD5-42E0-8DAD-D75AF1FC249F}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FunctionalRecognizer", "FunctionalRecognizer\FunctionalRecognizer.fsproj", "{FF2CD045-8B57-422C-954A-AB2CBBE6C065}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recognizer", "Recognizer\Recognizer.csproj", "{F15E6F19-7B0D-48A5-B505-7C9658D208CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitConsole", "DigitConsole\DigitConsole.csproj", "{27ACA814-52C5-4ABC-B5E7-A6D8B3D264F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,8 +41,15 @@ Global
 		{F15E6F19-7B0D-48A5-B505-7C9658D208CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F15E6F19-7B0D-48A5-B505-7C9658D208CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F15E6F19-7B0D-48A5-B505-7C9658D208CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27ACA814-52C5-4ABC-B5E7-A6D8B3D264F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27ACA814-52C5-4ABC-B5E7-A6D8B3D264F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27ACA814-52C5-4ABC-B5E7-A6D8B3D264F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27ACA814-52C5-4ABC-B5E7-A6D8B3D264F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FF539E09-68FA-4B35-AF8D-D68CA46B8FF0}
 	EndGlobalSection
 EndGlobal
