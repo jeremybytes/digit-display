@@ -17,6 +17,7 @@ namespace DigitConsole
 
         static void Main(string[] args)
         {
+            var startTime = DateTime.Now;
             var log = new List<Prediction>();
 
             string[] rawData = FileLoader.LoadDataStrings();
@@ -41,6 +42,8 @@ namespace DigitConsole
                 }
             }
 
+            var endTime = DateTime.Now;
+
             Console.Clear();
             Console.WriteLine("Press ENTER to view errors");
             Console.ReadLine();
@@ -51,6 +54,8 @@ namespace DigitConsole
                 Console.WriteLine("-------------------------------------");
             }
             Console.WriteLine($"Total Errors: {log.Count}");
+            Console.WriteLine($"Start Time: {startTime}");
+            Console.WriteLine($"End Time: {endTime}");
             Console.WriteLine("\n\nEND END END END END END END END END");
             Console.ReadLine();
         }
