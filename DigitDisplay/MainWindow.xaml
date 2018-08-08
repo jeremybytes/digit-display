@@ -21,11 +21,11 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Margin="0,15,0,0">
             <TextBlock Text="Record Count:" Margin="0,0,10,0" />
-            <TextBlock x:Name="RecordCount" Text="325" Width="75" FontWeight="Bold"/>
+            <TextBox x:Name="RecordCount" Text="325" Width="75" FontWeight="Bold"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="2" Margin="0,15,0,0">
             <TextBlock Text="Offset: " Margin="0,0,10,0" />
-            <TextBlock x:Name="Offset" Text="0" Width="75" FontWeight="Bold"/>
+            <TextBox x:Name="Offset" Text="0" Width="75" FontWeight="Bold"/>
         </StackPanel>
         <Button x:Name="GoButton" Content="Go" Grid.Row="0" Grid.Column="3"
                     FontSize="24" Margin="30,0,0,0" Width="100"

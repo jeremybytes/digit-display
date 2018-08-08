@@ -20,25 +20,35 @@ namespace DigitDisplay
         public MainWindow()
         {
             InitializeComponent();
-            Offset.Text = ConfigurationManager.AppSettings["offset"];
-            RecordCount.Text = ConfigurationManager.AppSettings["recordCount"];
+            Offset.Text = 6000.ToString();
+            RecordCount.Text = 459.ToString();
         }
 
-        private void GoButton_Click(object sender, RoutedEventArgs e)
+        private async void GoButton_Click(object sender, RoutedEventArgs e)
         {
             LeftPanel.Children.Clear();
             RightPanel.Children.Clear();
 
-            string[] rawData = FileLoader.LoadDataStrings();
+            string fileName = AppDomain.CurrentDomain.BaseDirectory + "train.csv";
+
+            int offset = int.Parse(Offset.Text);
+            int recordCount = int.Parse(RecordCount.Text);
+
+            string[] rawTrain = await Task.Run(() => Loader.trainingReader(fileName, offset, recordCount));
+            string[] rawValidation = await Task.Run(() => Loader.validationReader(fileName, offset, recordCount));
+
+            var manhattanClassifier = Recognizers.manhattanClassifier(rawTrain);
 
             var manhattanRecognizer = new RecognizerControl(
-                "Manhattan Classifier", Recognizer.manhattanClassifier,
-                rawData);
+                "Manhattan Classifier", manhattanClassifier,
+                rawValidation);
             LeftPanel.Children.Add(manhattanRecognizer);
 
+            var euclideanClassifier = Recognizers.euclideanClassifier(rawTrain);
+
             var euclideanRecognizer = new RecognizerControl(
-                "Euclidean Classifier", Recognizer.euclideanClassifier,
-                rawData);
+                "Euclidean Classifier", euclideanClassifier,
+                rawValidation);
             RightPanel.Children.Add(euclideanRecognizer);
         }
     }

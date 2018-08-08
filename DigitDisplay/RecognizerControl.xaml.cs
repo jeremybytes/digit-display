@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static Recognizers;
 
 namespace DigitDisplay
 {
     public partial class RecognizerControl : UserControl
     {
         string classifierName;
-        FSharpFunc<int[], string> classifier;
+        FSharpFunc<int[], Observation> classifier;
         string[] rawData;
 
         DateTimeOffset startTime;
@@ -22,7 +23,7 @@ namespace DigitDisplay
         SolidColorBrush whiteBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
         int errors = 0;
 
-        public RecognizerControl(string classifierName, FSharpFunc<int[], string> classifier,
+        public RecognizerControl(string classifierName, FSharpFunc<int[], Observation> classifier,
             string[] rawData)
         {
             InitializeComponent();
@@ -41,20 +42,20 @@ namespace DigitDisplay
 
         private void PopulatePanel(string[] rawData)
         {
-            var tasks = new List<Task<string>>();
+            var tasks = new List<Task<Observation>>();
             foreach (var imageString in rawData)
             {
                 int actual = imageString.Split(',').Select(x => Convert.ToInt32(x)).First();
-                var task = Task.Run<string>(() =>
+                var task = Task.Run<Observation>(() =>
                 {
                     int[] ints = imageString.Split(',').Select(x => Convert.ToInt32(x)).Skip(1).ToArray();
-                    return Recognizer.predict<string>(ints, classifier);
+                    return Recognizers.predict<Observation>(ints, classifier);
                 }
                 );
                 tasks.Add(task);
                 task.ContinueWith(t =>
                     {
-                        CreateUIElements(t.Result, actual.ToString(), imageString, DigitsBox);
+                        CreateUIElements(t.Result.Label, actual.ToString(), imageString, DigitsBox);
                     },
                     TaskScheduler.FromCurrentSynchronizationContext()
                 );
