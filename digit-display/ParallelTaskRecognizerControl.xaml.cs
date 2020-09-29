@@ -1,5 +1,4 @@
-﻿using DigitLoader;
-using Microsoft.FSharp.Core;
+﻿using Microsoft.FSharp.Core;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,47 +11,45 @@ using static Recognizers;
 
 namespace DigitDisplay
 {
-    public partial class RecognizerControl : UserControl
+    public partial class ParallelTaskRecognizerControl : UserControl
     {
-        string classifierName;
-        FSharpFunc<int[], Observation> classifier;
-        string[] rawData;
+        #region Control Setup
+
+        string controlTitle;        
 
         DateTimeOffset startTime;
         SolidColorBrush redBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 150, 150));
         SolidColorBrush whiteBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
         int errors = 0;
 
-        public RecognizerControl(string classifierName, FSharpFunc<int[], Observation> classifier,
-            string[] rawData)
+        public ParallelTaskRecognizerControl(string controlTitle)
         {
             InitializeComponent();
-            this.classifierName = classifierName;
-            this.classifier = classifier;
-            this.rawData = rawData;
+            this.controlTitle = controlTitle;
             Loaded += RecognizerControl_Loaded;
         }
 
         private void RecognizerControl_Loaded(object sender, RoutedEventArgs e)
         {
-
-            ClassifierText.Text = classifierName;
-            PopulatePanel(rawData);
+            ClassifierText.Text = controlTitle + " (Parallel Task)";
         }
 
-        private void PopulatePanel(string[] rawData)
+        #endregion
+
+        public Task Start(string[] rawData, FSharpFunc<int[], Observation> classifier)
         {
-            var tasks = new List<Task<Observation>>();
+            var allTasks = new List<Task<Observation>>();
             foreach (var imageString in rawData)
             {
                 int actual = imageString.Split(',').Select(x => Convert.ToInt32(x)).First();
+                int[] ints = imageString.Split(',').Select(x => Convert.ToInt32(x)).Skip(1).ToArray();
+
                 var task = Task.Run<Observation>(() =>
                 {
-                    int[] ints = imageString.Split(',').Select(x => Convert.ToInt32(x)).Skip(1).ToArray();
                     return Recognizers.predict<Observation>(ints, classifier);
                 }
                 );
-                tasks.Add(task);
+                allTasks.Add(task);
                 task.ContinueWith(t =>
                     {
                         CreateUIElements(t.Result.Label, actual.ToString(), imageString, DigitsBox);
@@ -60,7 +57,8 @@ namespace DigitDisplay
                     TaskScheduler.FromCurrentSynchronizationContext()
                 );
             }
-            Task.WhenAny(tasks).ContinueWith(t => startTime = DateTime.Now);
+            Task.WhenAny(allTasks).ContinueWith(t => startTime = DateTime.Now);
+            return Task.WhenAll(allTasks);
         }
 
         private void CreateUIElements(string prediction, string actual, string imageData,
@@ -68,7 +66,7 @@ namespace DigitDisplay
         {
             Bitmap image = DigitBitmap.GetBitmapFromRawData(imageData);
 
-            var multiplier = 1.5;
+            var multiplier = 1.0;
             var imageControl = new System.Windows.Controls.Image();
             imageControl.Source = image.ToWpfBitmap();
             imageControl.Stretch = Stretch.UniformToFill;

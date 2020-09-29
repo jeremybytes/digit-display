@@ -1,17 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30517.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitDisplay", "DigitDisplay\DigitDisplay.csproj", "{8E1C0000-6DD5-42E0-8DAD-D75AF1FC249F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitLoader", "DigitLoader\DigitLoader.csproj", "{DFD9DD4E-CB76-4BE3-AE29-B64842CAB023}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitLoader.Test", "DigitLoader.Test\DigitLoader.Test.csproj", "{E094A0D0-AFAC-4136-9136-5A22D913B562}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "digit-console", "digit-console\digit-console.csproj", "{E586D596-9B39-4CD3-9E50-D8EA949A8674}"
-EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "recognizers", "recognizers\recognizers.fsproj", "{B378C036-3FB5-4147-9F45-D9648DA8C155}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "digit-display", "digit-display\digit-display.csproj", "{AC8B6F47-0DEE-47B2-AC39-7FF591B92B1B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "digit-console", "digit-console\digit-console.csproj", "{EA644DBE-F2DC-410C-9C15-709FCC2DE548}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "digit-console-channel", "digit-console-channel\digit-console-channel.csproj", "{557A7C2C-B851-4B28-9324-0AB8BAC6EEA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,26 +17,22 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8E1C0000-6DD5-42E0-8DAD-D75AF1FC249F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8E1C0000-6DD5-42E0-8DAD-D75AF1FC249F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8E1C0000-6DD5-42E0-8DAD-D75AF1FC249F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8E1C0000-6DD5-42E0-8DAD-D75AF1FC249F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DFD9DD4E-CB76-4BE3-AE29-B64842CAB023}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DFD9DD4E-CB76-4BE3-AE29-B64842CAB023}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DFD9DD4E-CB76-4BE3-AE29-B64842CAB023}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DFD9DD4E-CB76-4BE3-AE29-B64842CAB023}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E094A0D0-AFAC-4136-9136-5A22D913B562}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E094A0D0-AFAC-4136-9136-5A22D913B562}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E094A0D0-AFAC-4136-9136-5A22D913B562}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E094A0D0-AFAC-4136-9136-5A22D913B562}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E586D596-9B39-4CD3-9E50-D8EA949A8674}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E586D596-9B39-4CD3-9E50-D8EA949A8674}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E586D596-9B39-4CD3-9E50-D8EA949A8674}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E586D596-9B39-4CD3-9E50-D8EA949A8674}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B378C036-3FB5-4147-9F45-D9648DA8C155}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B378C036-3FB5-4147-9F45-D9648DA8C155}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B378C036-3FB5-4147-9F45-D9648DA8C155}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B378C036-3FB5-4147-9F45-D9648DA8C155}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC8B6F47-0DEE-47B2-AC39-7FF591B92B1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC8B6F47-0DEE-47B2-AC39-7FF591B92B1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC8B6F47-0DEE-47B2-AC39-7FF591B92B1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC8B6F47-0DEE-47B2-AC39-7FF591B92B1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA644DBE-F2DC-410C-9C15-709FCC2DE548}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA644DBE-F2DC-410C-9C15-709FCC2DE548}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA644DBE-F2DC-410C-9C15-709FCC2DE548}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA644DBE-F2DC-410C-9C15-709FCC2DE548}.Release|Any CPU.Build.0 = Release|Any CPU
+		{557A7C2C-B851-4B28-9324-0AB8BAC6EEA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{557A7C2C-B851-4B28-9324-0AB8BAC6EEA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{557A7C2C-B851-4B28-9324-0AB8BAC6EEA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{557A7C2C-B851-4B28-9324-0AB8BAC6EEA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

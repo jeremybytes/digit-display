@@ -8,4 +8,4 @@ let trainingReader path fileOffset recordCount =
 
 let validationReader path fileOffset recordCount =
     let data = File.ReadAllLines path
-    data.[(1+fileOffset)..(1+fileOffset+recordCount)]
+    data.[(1+fileOffset)..(fileOffset+recordCount)]

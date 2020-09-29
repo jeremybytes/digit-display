@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Microsoft.FSharp.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Channels;
 using System.Threading.Tasks;
+using static Recognizers;
 
-namespace digit_console
+namespace digit_console_channel
 {
     class Program
     {
@@ -13,6 +16,50 @@ namespace digit_console
             public string actual;
             public int[] image;
             public int[] closestMatch;
+        }
+
+
+        private static async Task Listen(ChannelReader<Prediction> reader,
+            List<Prediction> log, bool mini = false)
+        {
+            await foreach (Prediction prediction in reader.ReadAllAsync())
+            {
+                // Display the result
+                Console.SetCursorPosition(0, 0);
+                WriteOutput(prediction, mini);
+
+                if (prediction.prediction != prediction.actual.ToString())
+                {
+                    log = LogError(log, prediction);
+                }
+            }
+        }
+
+        private static async Task Produce(ChannelWriter<Prediction> writer,
+            string[] rawData, FSharpFunc<int[], Observation> classifier)
+        {
+            await Task.Run(() =>
+            {
+                Parallel.ForEach(rawData,
+                  imageString =>
+                  {
+                      int actual = imageString.Split(',').Select(x => Convert.ToInt32(x)).First();
+                      int[] ints = imageString.Split(',').Select(x => Convert.ToInt32(x)).Skip(1).ToArray();
+
+                      var result = Recognizers.predict(ints, classifier);
+
+                      var prediction = new Prediction
+                      {
+                          prediction = result.Label,
+                          actual = actual.ToString(),
+                          image = ints,
+                          closestMatch = result.Pixels
+                      };
+                      writer.WriteAsync(prediction);
+                  });
+            });
+
+            writer.Complete();
         }
 
         static async Task Main(string[] args)
@@ -40,50 +87,14 @@ namespace digit_console
             Console.Clear();
             var startTime = DateTime.Now;
 
-            List<Task> digitTasks = new List<Task>();
+            var channel = Channel.CreateUnbounded<Prediction>();
 
-            foreach (var imageString in rawValidation)
-            {
-                Task<Prediction> task = Task.Run(() =>
-                {
-                    int actual = imageString.Split(',').Select(x => Convert.ToInt32(x)).First();
-                    int[] ints = imageString.Split(',').Select(x => Convert.ToInt32(x)).Skip(1).ToArray();
+            var listener = Listen(channel.Reader, log, mini);
+            var producer = Produce(channel.Writer, rawValidation, classifier);
 
-                    // Call the CPU-intensive function
-                    var result = Recognizers.predict(ints, classifier);
+            await producer;
+            await listener;
 
-                    var prediction = new Prediction
-                    {
-                        prediction = result.Label,
-                        actual = actual.ToString(),
-                        image = ints,
-                        closestMatch = result.Pixels
-                    };
-                    return prediction;
-                });
-                digitTasks.Add(task);
-
-
-                Task continuation = task.ContinueWith(t =>
-                {
-                    Prediction prediction = t.Result;
-
-                    lock (fileName)
-                    {
-                        // Display the result
-                        Console.SetCursorPosition(0, 0);
-                        WriteOutput(prediction, mini);
-                    }
-
-                    if (prediction.prediction != prediction.actual.ToString())
-                    {
-                        log = LogError(log, prediction);
-                    }
-                });
-                digitTasks.Add(continuation);
-            }
-
-            await Task.WhenAll(digitTasks);
             var endTime = DateTime.Now;
 
             Console.Clear();

@@ -1,6 +1,6 @@
 using System;
 
-namespace digit_console
+namespace digit_console_channel
 {
     public static class Display
     {
