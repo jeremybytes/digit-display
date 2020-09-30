@@ -9,8 +9,15 @@
     <ProjectReference Include="..\recognizers\recognizers.fsproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)..\Data\*.csv&quot; &quot;$(TargetDir)&quot; /Y" />
+  <Target Name="CopyDataFiles" AfterTargets="Build">
+    <ItemGroup>
+      <DataFiles Include="$(ProjectDir)..\Data\*.csv"/>
+    </ItemGroup>
+
+    <Copy
+      SourceFiles="@(DataFiles)"
+      DestinationFolder="$(TargetDir)\"
+      SkipUnchangedFiles="true" />
   </Target>
 
 </Project>
