@@ -16,4 +16,4 @@ Articles for this application are collected under the "Machine Learning" categor
 
 Notes
 ------
-**Sep 2020**: Moved to .NET Core 3.1
+**Sep 2020**: Moved to .NET Core 3.1, added Channel support, add cross-platform copy operations for console applications.
