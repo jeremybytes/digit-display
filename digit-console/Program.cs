@@ -30,7 +30,7 @@ namespace digit_console
 
             string fileName = AppDomain.CurrentDomain.BaseDirectory + "train.csv";
             int offset = 6000;
-            int recordCount = 200;
+            int recordCount = 400;
 
             string[] rawTrain = Loader.trainingReader(fileName, offset, recordCount);
             string[] rawValidation = Loader.validationReader(fileName, offset, recordCount);

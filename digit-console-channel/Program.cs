@@ -18,6 +18,8 @@ namespace digit_console_channel
             public int[] closestMatch;
         }
 
+        private static ParallelOptions options = new ParallelOptions()
+            { MaxDegreeOfParallelism = 7 };
 
         private static async Task Listen(ChannelReader<Prediction> reader,
             List<Prediction> log, bool mini = false)
@@ -40,7 +42,7 @@ namespace digit_console_channel
         {
             await Task.Run(() =>
             {
-                Parallel.ForEach(rawData,
+                Parallel.ForEach(rawData, options,
                   imageString =>
                   {
                       int actual = imageString.Split(',').Select(x => Convert.ToInt32(x)).First();
@@ -77,7 +79,7 @@ namespace digit_console_channel
 
             string fileName = AppDomain.CurrentDomain.BaseDirectory + "train.csv";
             int offset = 6000;
-            int recordCount = 200;
+            int recordCount = 400;
 
             string[] rawTrain = Loader.trainingReader(fileName, offset, recordCount);
             string[] rawValidation = Loader.validationReader(fileName, offset, recordCount);
