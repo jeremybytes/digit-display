@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using static Recognizers;
 
@@ -14,6 +15,8 @@ namespace DigitDisplay
     public partial class ParallelTaskRecognizerControl : UserControl
     {
         #region Control Setup
+
+        private DetailControl DetailPopup;
 
         string controlTitle;        
 
@@ -66,7 +69,7 @@ namespace DigitDisplay
         {
             Bitmap image = DigitBitmap.GetBitmapFromRawData(imageData);
 
-            var multiplier = 1.0;
+            var multiplier = 0.5;
             var imageControl = new System.Windows.Controls.Image();
             imageControl.Source = image.ToWpfBitmap();
             imageControl.Stretch = Stretch.UniformToFill;
@@ -76,14 +79,16 @@ namespace DigitDisplay
             var textBlock = new TextBlock();
             textBlock.Height = imageControl.Height;
             textBlock.Width = imageControl.Width;
-            textBlock.FontSize = 12; // * multiplier;
+            textBlock.FontSize = 12 * multiplier;
             textBlock.TextAlignment = TextAlignment.Center;
             textBlock.Text = prediction;
 
             var button = new Button();
             var backgroundBrush = whiteBrush;
             button.Background = backgroundBrush;
-            button.Click += ToggleCorrectness;
+            button.Tag = new DetailRecord() { prediction = prediction, actual = actual, image = image };
+            button.MouseEnter += Button_MouseEnter;
+            button.MouseLeave += Button_MouseLeave;
 
             var buttonContent = new StackPanel();
             buttonContent.Orientation = Orientation.Horizontal;
@@ -105,22 +110,43 @@ namespace DigitDisplay
             TimingBlock.Text = $"Duration (seconds): {duration.TotalSeconds:0}";
         }
 
-        private void ToggleCorrectness(object sender, RoutedEventArgs e)
+        private void Button_MouseEnter(object sender, MouseEventArgs e)
         {
-            var button = sender as Button;
-            if (button == null) return;
+            var button = (Button)sender;
+            var detail = button.Tag as DetailRecord;
+            if (DetailPopup == null)
+            {
+                DetailPopup = new DetailControl(detail);
+                DigitsCanvas.Children.Add(DetailPopup);
+            }
 
-            if (button.Background == whiteBrush)
-            {
-                button.Background = redBrush;
-                errors++;
-            }
-            else
-            {
-                button.Background = whiteBrush;
-                errors--;
-            }
-            ErrorBlock.Text = $"Errors: {errors}";
+            var point = e.GetPosition(DigitsCanvas);
+            bool invertY = (point.Y + 200) > DigitsCanvas.ActualHeight;
+            bool invertX = (point.X + 200) > DigitsCanvas.ActualWidth;
+
+            int yOffset = invertY ? -150 : 10;
+            int xOffset = invertX ? -200 : 10;
+
+            Canvas.SetTop(DetailPopup, e.GetPosition(DigitsCanvas).Y + yOffset);
+            Canvas.SetLeft(DetailPopup, e.GetPosition(DigitsCanvas).X + xOffset);
+            DetailPopup.Data = detail;
+            DetailPopup.Visibility = Visibility.Visible;
+        }
+
+        private void Button_MouseLeave(object sender, MouseEventArgs e)
+        {
+            DetailPopup.Visibility = Visibility.Hidden;
+        }
+
+        private Window GetParentWindow(FrameworkElement element)
+        {
+            if (element?.Parent != null)
+                if (element.Parent is Window)
+                    return element.Parent as Window;
+                else
+                    return GetParentWindow(element.Parent as FrameworkElement);
+
+            return null;
         }
     }
 }

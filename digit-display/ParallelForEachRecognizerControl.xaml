@@ -21,5 +21,6 @@
                        HorizontalAlignment="Center" Text="Errors: 0"/>
         </StackPanel>
         <WrapPanel x:Name="DigitsBox" Grid.Row="2" />
+        <Canvas x:Name="DigitsCanvas" Grid.Row="2" />
     </Grid>
 </UserControl>
