@@ -17,6 +17,7 @@ namespace DigitDisplay
         #region Control Setup
 
         private DetailControl DetailPopup;
+        private double DisplayMultiplier;
 
         private class RecognizerResult
         {
@@ -32,10 +33,12 @@ namespace DigitDisplay
         SolidColorBrush whiteBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
         int errors = 0;
 
-        public ParallelForEachRecognizerControl(string controlTitle)
+        public ParallelForEachRecognizerControl(string controlTitle,
+            double displayMultiplier = 1.0)
         {
             InitializeComponent();
             this.controlTitle = controlTitle + " (Parallel ForEach)";
+            DisplayMultiplier = displayMultiplier;
 
             Loaded += RecognizerControl_Loaded;
         }
@@ -110,17 +113,16 @@ namespace DigitDisplay
         {
             Bitmap image = DigitBitmap.GetBitmapFromRawData(imageData);
 
-            var multiplier = 1;
             var imageControl = new System.Windows.Controls.Image();
             imageControl.Source = image.ToWpfBitmap();
             imageControl.Stretch = Stretch.UniformToFill;
-            imageControl.Width = imageControl.Source.Width * multiplier;
-            imageControl.Height = imageControl.Source.Height * multiplier;
+            imageControl.Width = imageControl.Source.Width * DisplayMultiplier;
+            imageControl.Height = imageControl.Source.Height * DisplayMultiplier;
 
             var textBlock = new TextBlock();
             textBlock.Height = imageControl.Height;
             textBlock.Width = imageControl.Width;
-            textBlock.FontSize = 12 * multiplier;
+            textBlock.FontSize = 12 * DisplayMultiplier;
             textBlock.TextAlignment = TextAlignment.Center;
             textBlock.Text = prediction;
 

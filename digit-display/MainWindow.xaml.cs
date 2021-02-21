@@ -11,6 +11,7 @@ namespace DigitDisplay
             InitializeComponent();
             Offset.Text = 6000.ToString();
             RecordCount.Text = 375.ToString();
+            OutputSize.Text = "1.0";
         }
 
         private async void GoButton_Click(object sender, RoutedEventArgs e)
@@ -22,6 +23,7 @@ namespace DigitDisplay
 
             int offset = int.Parse(Offset.Text);
             int recordCount = int.Parse(RecordCount.Text);
+            double displayMultipler = double.Parse(OutputSize.Text);
 
             string[] rawTrain = await Task.Run(() => Loader.trainingReader(fileName, offset, recordCount));
             string[] rawValidation = await Task.Run(() => Loader.validationReader(fileName, offset, recordCount));
@@ -30,11 +32,11 @@ namespace DigitDisplay
             var euclideanClassifier = Recognizers.euclideanClassifier(rawTrain);
 
             var panel1Recognizer = new ParallelForEachRecognizerControl(
-                "Manhattan Classifier");
+                "Manhattan Classifier", displayMultipler);
             LeftPanel.Children.Add(panel1Recognizer);
 
             var panel2Recognizer = new ParallelForEachRecognizerControl(
-                "Euclidean Classifier");
+                "Euclidean Classifier", displayMultipler);
             RightPanel.Children.Add(panel2Recognizer);
 
             MessageBox.Show("Ready to start panel #1");
